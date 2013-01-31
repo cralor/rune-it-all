@@ -1,0 +1,20 @@
+## Interface: 40300
+## Title: Rune-It-All
+## Author: cralor
+## Version: 3.2.1
+## Notes: Simple and rich Death Knight rune customizations
+## SavedVariablesPerCharacter: RIADB
+## LoadManagers: AddonLoader
+## X-LoadOn-Class: DEATHKNIGHT
+## X-Embeds: Portfolio
+## X-Category: Death Knight
+## X-Email: cralor@gmail.com
+## X-Curse-Packaged-Version: 3.2.1-40300
+## X-Curse-Project-Name: Rune-It-All
+## X-Curse-Project-ID: runeitall
+## X-Curse-Repository-ID: wow/runeitall/mainline
+
+Portfolio\Loader.xml
+RuneItAllFrame.xml
+RuneItAll.lua
+Options.lua

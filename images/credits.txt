@@ -1,0 +1,11 @@
+orbs: Camalus @ WoWI
+beta: Blizzard
+beta-enhanced: Unknown
+DKI: vextorvixen
+letter: Unknown (DKI contest entry)
+japanese: Unknown
+runica: Lyn
+
+Thanks to these people for their art/work!
+
+If you know the author to any of the "Unknown" ones, please let me know.
