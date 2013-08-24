@@ -2,17 +2,16 @@
 -- => Option Registration
 -- <= == == == == == == == == == == == == =>
 
-if (not RIADB) then
+if not RIADB then
 	RIADB = {
-        --parent = UIParent;
-        --point = "BOTTOMLEFT";
-        --parentPoint = "BOTTOMLEFT";
         x = 500;
         y = 500;
 		ind_x = {};
 		ind_y = {};
     };
 end
+
+local L = RIA_localeDB
 
 local Portfolio = LibStub and LibStub("Portfolio")
 if not Portfolio then return end
@@ -37,28 +36,28 @@ local optionTable = {
 	options = {
 		{
 			id = "moving";
-			headerText = "Unlock Type";
+			headerText = L["Unlock Type"];
 			type = CONTROLTYPE_DROPDOWN;
 			defaultValue = "0";
 			menuList = {
 				{
-					text = "Unlock as Shape";
+					text = L["Unlock as Shape"];
                     value = "0";
 				};
 				{
-					text = "Unlock Individually";
+					text = L["Unlock Individually"];
                     value = "1";
 				};
 			};
 		};
 		{
 			id = "unlocked";
-			text = "Unlock Runes";
-			tooltipText = "Check this to unlock the runes with the type you have chosen.";
+			text = L["Unlock Runes"];
+			tooltipText = L["Check this to unlock the runes with the type you have chosen."];
 			type = CONTROLTYPE_CHECKBOX;
 			defaultValue = "0";
 			point = {"LEFT", "moving", "RIGHT", 20, 0};
-			callback = RuneItAll_Lock
+			callback = RIA:setLocked
 		};
 		--[[{
 			id = "display_used";
@@ -77,96 +76,96 @@ local optionTable = {
 		};]]
         {
 			id = "layout";
-			headerText = "Rune Layouts";
+			headerText = L["Rune Layouts"];
 			type = CONTROLTYPE_DROPDOWN;
 			defaultValue = "0";
 			menuList = {
 				{
-					text = "Horizontal";
+					text = L["Horizontal"];
                     value = "0";
 				};
 				{
-					text = "Vertical";
+					text = L["Vertical"];
 					value = "1";
 				};
 				{
-					text = "Vertical Block";
+					text = L["Vertical Block"];
 					value = "2";
 				};
                 {
-                    text = "Horizontal Block";
+                    text = L["Horizontal Block"];
                     value = "4";
                 };
 				{
-					text = "Up Curve";
+					text = L["Up Curve"];
 					value = "3";
 				};
                 {
-                    text = "Down Curve";
+                    text = L["Down Curve"];
                     value = "5";
                 };
 			};
 			point = {"TOP", "moving", "BOTTOM", -5, -25};
-            callback = RuneItAll_Orientation
+            callback = RIA:setLayout
 		};
         {
             id = "images";
-            headerText = "Rune Textures";
+            headerText = L["Rune Textures"];
             type = CONTROLTYPE_DROPDOWN;
             defaultValue = "0";
             menuList = {
                 {
-					text = "Default";
+					text = L["Default"];
                     value = "0";
 				};
 				{
-					text = "Beta Runes";
+					text = L["Beta Runes"];
 					value = "1";
 				};
 				{
-					text = "DKI Runes";
+					text = L["DKI Runes"];
 					value = "2";
 				};
 				{
-					text = "Letter Runes";
+					text = L["Letter Runes"];
 					value = "3";
 				};
                 {
-                    text = "Orb Runes";
+                    text = L["Orb Runes"];
                     value = "4";
                 };
                 {
-                    text = "Enhanced Beta Runes";
+                    text = L["Enhanced Beta Runes"];
                     value = "5";
                 };
                 {
-                    text = "Japanese Runes";
+                    text = L["Japanese Runes"];
                     value = "6";
                 };
                 {
-                    text = "Runica Runes";
+                    text = L["Runica Runes"];
                     value = "7";
                 };
             };
 			point = {"LEFT", "layout", "RIGHT", 15, 0};
-            callback = RuneItAll_Images
+            callback = RIA:setTexture
         };
 		{
             id = "entv";
-            headerText = "Entering Vehicle";
+            headerText = L["Entering Vehicle"];
             type = CONTROLTYPE_DROPDOWN;
             defaultValue = "0";
             menuList = {
                 {
-					text = "Hide";
+					text = L["Hide"];
                     value = "0";
 				};
 				{
-					text = "O.O.C. Alpha";
+					text = L["O.O.C. Alpha"];
 					value = "1";
 				};
 				{
-					text = "I.C. Alpha";
+					text = L["I.C. Alpha"];
 					value = "2";
 				};
             };
@@ -174,24 +173,24 @@ local optionTable = {
         };
 		{
             id = "scale";
-            text = "Rune Scale (%.1f)";
-            tooltipText = "Adjust the scale of the runes.";
-            minText = "Small";
-            maxText = "Large";
+            text = L["Rune Scale (%.1f)"];
+            tooltipText = L["Adjust the scale of the runes."];
+            minText = L["Small"];
+            maxText = L["Large"];
             minValue = 0.5;
             maxValue = 2.0;
             valueStep = 0.1;
             type = CONTROLTYPE_SLIDER;
             defaultValue = "1.2";
 			point = {nil, "layout", nil, nil, -25};
-            callback = RuneItAll_Scale
+            callback = RIA:setScale
         };
 		{
             id = "cdalpha";
-            text = "CD Rune Alpha (%.1f)";
-            tooltipText = "The transparency of the runes when on cooldown.";
-            minText = "Light";
-            maxText = "Solid";
+            text = L["CD Rune Alpha (%.1f)"];
+            tooltipText = L["The transparency of the runes when on cooldown."];
+            minText = L["Light"];
+            maxText = L["Solid"];
             minValue = 0;
             maxValue = 1;
             valueStep = 0.1;
@@ -201,10 +200,10 @@ local optionTable = {
         };
 		{
 			id = "alphain";
-			text = "Alpha I.C. (%.1f)";
-			tooltipText = "The transparency of the runes while in combat.";
-			minText = "Light";
-			maxText = "Solid";
+			text = L["Alpha I.C. (%.1f)"];
+			tooltipText = L["The transparency of the runes while in combat."];
+			minText = L["Light"];
+			maxText = L["Solid"];
 			minValue = 0.1;
 			maxValue = 1;
 			valueStep = 0.1;
@@ -214,82 +213,82 @@ local optionTable = {
 		};
         {
             id = "alphaout";
-            text = "Alpha O.O.C. (%.1f)";
-            tooltipText = "The transparency of the runes while out of combat.";
-            minText = "Light";
-            maxText = "Solid";
+            text = L["Alpha O.O.C. (%.1f)"];
+            tooltipText = L["The transparency of the runes while out of combat."];
+            minText = L["Light"];
+            maxText = L["Solid"];
             minValue = 0;
             maxValue = 1;
             valueStep = 0.1;
             type = CONTROLTYPE_SLIDER;
             defaultValue = "0.5";
 			point = {"LEFT", "alphain", "RIGHT", 20, 0};
-            callback = RuneItAll_AlphaOut
+            callback = RIA:setAlpha
         };
 		{
 			id = "horizontal";
-			text = "Horizontal Padding (%1.0f)";
-			tooltipText = "The horizontal distance between runes.";
-			minText = "Close";
-			maxText = "Far";
+			text = L["Horizontal Padding (%1.0f)"];
+			tooltipText = L["The horizontal distance between runes."];
+			minText = L["Close"];
+			maxText = L["Far"];
 			minValue = -25;
 			maxValue = 25;
 			valueStep = 1;
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "4";
 			point = {"TOP", "alphain", "BOTTOM", 0, -25};
-			callback = RuneItAll_PadHoriz
+			callback = RIA:setHorizontalPadding
 		};
 		{
 			id = "vertical";
-			text = "Vertical Padding (%1.0f)";
-			tooltipText = "The vertical distance between runes.";
-			minText = "Close";
-			maxText = "Far";
+			text = L["Vertical Padding (%1.0f)"];
+			tooltipText = L["The vertical distance between runes."];
+			minText = L["Close"];
+			maxText = L["Far"];
 			minValue = -25;
 			maxValue = 25;
 			valueStep = 1;
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "-18";
 			point = {"LEFT", "horizontal", "RIGHT", 20, 0};
-			callback = RuneItAll_PadVert
+			callback = RIA:setVerticalPadding
 		};
 		{
 			id = "CDHeader";
-			text = "Cooldown Text";
+			text = L["Cooldown Text"];
 			type = CONTROLTYPE_HEADER;
 			point = {nil, "horizontal", nil, nil, nil};
 		};
 		{
 			id = "cdtext";
-			text = "Enabled";
-			tooltipText = "Check this to have cooldown timers appear on your runes.";
+			text = L["Enabled"];
+			tooltipText = L["Check this to have cooldown timers appear on your runes."];
 			type = CONTROLTYPE_CHECKBOX;
 			defaultValue = "0";
 		};
 		{
 			id = "color";
-			headerText = "Cooldown Text Colors";
+			headerText = L["Cooldown Text Colors"];
 			type = CONTROLTYPE_DROPDOWN;
 			defaultValue = "0";
 			menuList = {
 				{
-					text = "Default";
+					text = L["Default"];
 					value = "0";
 				};
 				{
-					text = "Rune Colors";
+					text = L["Rune Colors"];
 					value = "1";
 				};
 				{
-					text = "Custom (Color Picker)";
+					text = L["Custom (Color Picker)"];
 					value = "2";
 				};
 			};
 		};
 		{
 			id = "color_picker";
-			text = "Custom Color";
+			text = L["Custom Color"];
 			type = CONTROLTYPE_COLORPICKER;
 			hasOpacity = true;
 			defaultValue = {r=0.5, g=1, b=0.75, opacity=1};
@@ -297,17 +296,17 @@ local optionTable = {
 		};
 		{
 			id = "cdfs";
-			text = "Cooldown Font Size (%1.0f)";
-			tooltipText = "The font size of the cooldown count text.";
-			minText = "Small";
-			maxText = "Large";
+			text = L["Cooldown Font Size (%1.0f)"];
+			tooltipText = L["The font size of the cooldown count text."];
+			minText = L["Small"];
+			maxText = L["Large"];
 			minValue = 10;
 			maxValue = 25;
 			valueStep = 1;
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "14";
 			point = {"LEFT", "cdtext", "RIGHT", 150, 0};
-			callback = RuneItAll_CDFontSize
+			callback = RIA:setCDFontSize
 		};
 	};
 	savedVarTable = "RIADB";

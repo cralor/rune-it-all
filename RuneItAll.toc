@@ -1,8 +1,18 @@
-## Interface: 40300
+## Interface: 50300
 ## Title: Rune-It-All
 ## Author: cralor
-## Version: 3.2.1
+## Version: 4.0
 ## Notes: Simple and rich Death Knight rune customizations
+
+## Notes-ptBR: Simples e rico Death Knight runas personalizações
+## Notes-frFR: Personnalisation des runes de Chevalier de la Mort simple et complète
+## Notes-deDE: Einfache Aber vielseitige Anpassungen für Todesritter Runen
+## Notes-esMX: Personalizaciones simples para las runas del caballero de muerte.
+## Notes-ruRU: Простой и богатый Рыцарь Смерти руну настройки
+## Notes-zhCN: 简单而丰富的死亡骑士符文定制
+## Notes-esES: Personalizaciones simples para las runas del caballero de muerte.
+## Notes-zhTW: 簡單而豐富的死亡騎士符文定制
+
 ## SavedVariablesPerCharacter: RIADB
 ## LoadManagers: AddonLoader
 ## X-LoadOn-Class: DEATHKNIGHT
@@ -15,6 +25,7 @@
 ## X-Curse-Repository-ID: wow/runeitall/mainline
 
 Portfolio\Loader.xml
+Locale.lua
 RuneItAllFrame.xml
 RuneItAll.lua
 Options.lua
