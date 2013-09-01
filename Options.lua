@@ -13,6 +13,8 @@ end
 
 local L = RIA_localeDB
 
+local RIA = getRIATable()
+
 local Portfolio = LibStub and LibStub("Portfolio")
 if not Portfolio then return end
 
@@ -57,7 +59,7 @@ local optionTable = {
 			type = CONTROLTYPE_CHECKBOX;
 			defaultValue = "0";
 			point = {"LEFT", "moving", "RIGHT", 20, 0};
-			callback = RIA:setLocked
+			callback = RIA.setLocked;
 		};
 		--[[{
 			id = "display_used";
@@ -106,7 +108,7 @@ local optionTable = {
                 };
 			};
 			point = {"TOP", "moving", "BOTTOM", -5, -25};
-            callback = RIA:setLayout
+            callback = RIA.setLayout;
 		};
         {
             id = "images";
@@ -148,7 +150,7 @@ local optionTable = {
                 };
             };
 			point = {"LEFT", "layout", "RIGHT", 15, 0};
-            callback = RIA:setTexture
+            callback = RIA.setTexture;
         };
 		{
             id = "entv";
@@ -183,7 +185,7 @@ local optionTable = {
             type = CONTROLTYPE_SLIDER;
             defaultValue = "1.2";
 			point = {nil, "layout", nil, nil, -25};
-            callback = RIA:setScale
+            callback = RIA.setScale;
         };
 		{
             id = "cdalpha";
@@ -223,7 +225,7 @@ local optionTable = {
             type = CONTROLTYPE_SLIDER;
             defaultValue = "0.5";
 			point = {"LEFT", "alphain", "RIGHT", 20, 0};
-            callback = RIA:setAlpha
+            callback = RIA.setAlpha;
         };
 		{
 			id = "horizontal";
@@ -237,7 +239,7 @@ local optionTable = {
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "4";
 			point = {"TOP", "alphain", "BOTTOM", 0, -25};
-			callback = RIA:setHorizontalPadding
+			callback = RIA.setHorizontalPadding;
 		};
 		{
 			id = "vertical";
@@ -251,7 +253,7 @@ local optionTable = {
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "-18";
 			point = {"LEFT", "horizontal", "RIGHT", 20, 0};
-			callback = RIA:setVerticalPadding
+			callback = RIA.setVerticalPadding;
 		};
 		{
 			id = "CDHeader";
@@ -306,7 +308,7 @@ local optionTable = {
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "14";
 			point = {"LEFT", "cdtext", "RIGHT", 150, 0};
-			callback = RIA:setCDFontSize
+			callback = RIA.setCDFontSize;
 		};
 	};
 	savedVarTable = "RIADB";
