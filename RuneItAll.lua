@@ -42,16 +42,16 @@ function RIA:init()
 		blizzardRunes[i]:SetAlpha(0)
 		blizzardRunes[i]:UnregisterAllEvents()
 
-		RIA.runes[i] = _G["RIA_RuneButtonIndividual"..i]
-   		RIA.tex[i] = _G["RIA_RuneButtonIndividual"..i.."Rune"]
-    	RIA.border[i] = _G["RIA_RuneButtonIndividual"..i.."Border"]
-    	RIA.cooldown[i] = _G["RIA_RuneButtonIndividual"..i.."Cooldown"]
-    	RIA.cooldown[i]:SetScript("OnShow", function(self) if hide then self:Hide() end end)
-    	RIA.runes[i]:SetClampedToScreen(true)
-    	RIA.runes[i]:SetFrameStrata("LOW")
-    	RIA.runes[i]:EnableMouse(false)
-		RIA.runes[i]:Show()
-		RIA.tex[i]:Show()
+		self.runes[i] = _G["RIA_RuneButtonIndividual"..i]
+   		self.tex[i] = _G["RIA_RuneButtonIndividual"..i.."Rune"]
+    	self.border[i] = _G["RIA_RuneButtonIndividual"..i.."Border"]
+    	self.cooldown[i] = _G["RIA_RuneButtonIndividual"..i.."Cooldown"]
+    	self.cooldown[i]:SetScript("OnShow", function(self) if hide then self:Hide() end end)
+    	self.runes[i]:SetClampedToScreen(true)
+    	self.runes[i]:SetFrameStrata("LOW")
+    	self.runes[i]:EnableMouse(false)
+		self.runes[i]:Show()
+		self.tex[i]:Show()
 	end
 
 	-- Will the callbacks work?
@@ -60,28 +60,28 @@ end
 
 function RIA:refreshState()
     for i = 1, 6 do
-        RIA.runes[i]:Show()
+        self.runes[i]:Show()
     end
-    RIA.clearPoints()
-	RIA.setAlpha(RIADB.alphaout)
-	RIA.setScale(RIADB.scale)
-	RIA.setLayout(RIADB.layout)
-	RIA.setTexture(RIADB.images)
-	RIA.setVerticalPadding(RIADB.vertical)
-	RIA.setHorizontalPadding(RIADB.horizontal)
+    self:clearPoints()
+	self:setAlpha(RIADB.alphaout)
+	self:setScale(RIADB.scale)
+	self:setLayout(RIADB.layout)
+	self:setTexture(RIADB.images)
+	self:setVerticalPadding(RIADB.vertical)
+	self:setHorizontalPadding(RIADB.horizontal)
 end
 
 
 function RIA:OnLoad()
-    RIA.eventFrame:SetScript("OnEvent", RIA.OnEvent)
-    RIA.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-    RIA.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-    RIA.eventFrame:RegisterEvent("PLAYER_LOGIN")
-    RIA.eventFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
-    RIA.eventFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
-    RIA.eventFrame:RegisterEvent("RUNE_POWER_UPDATE")
-    RIA.eventFrame:RegisterEvent("RUNE_TYPE_UPDATE")
-    RIA.eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    self.eventFrame:SetScript("OnEvent", self.OnEvent)
+    self.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+    self.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
+    self.eventFrame:RegisterEvent("PLAYER_LOGIN")
+    self.eventFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
+    self.eventFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
+    self.eventFrame:RegisterEvent("RUNE_POWER_UPDATE")
+    self.eventFrame:RegisterEvent("RUNE_TYPE_UPDATE")
+    self.eventFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
     --imagetimer = 4
     --RIA.eventFrame:SetScript("OnUpdate", RuneItAll_ImagesOnUpdate)
 end
@@ -90,55 +90,55 @@ end
 function RIA:OnEvent(event, ...)
     if (event == "PLAYER_REGEN_DISABLED") then -- Entered combat
 		if not UnitInVehicle("player") then
-			RIA.setAlpha(RIADB.alphain)
+			self:setAlpha(RIADB.alphain)
 		end
     elseif (event == "PLAYER_REGEN_ENABLED") then -- Exited combat
 		if not UnitInVehicle("player") then
-			RIA.setAlpha(RIADB.alphaout)
+			self:setAlpha(RIADB.alphaout)
 		end
     elseif (event == "PLAYER_LOGIN") then
-		RIA.init()
+		self:init()
     elseif (event == "UNIT_EXITED_VEHICLE") and (... == "player") then
-        RIA.refreshState()
+        self:refreshState()
     elseif (event == "UNIT_ENTERED_VEHICLE") and (... == "player") then
         if RIADB.entv == "0" then
 			for i = 1, 6 do
-				RIA.runes[i]:Hide()
+				self.runes[i]:Hide()
 			end
 		elseif RIADB.entv == "1" then
-			RIA.refreshState()
+			self:refreshState()
 		else
-            RIA.refreshState()
-			RIA.setAlpha(RIADB.alphain)
+            self:refreshState()
+			self:setAlpha(RIADB.alphain)
 		end
     elseif (event == "RUNE_TYPE_UPDATE") then
         local rune = ...
-        RIA.runeUpdate(rune)
+        self:runeUpdate(rune)
     elseif (event == "RUNE_POWER_UPDATE") then
         local rune = select(1, ...)
 		local usable = select(3, GetRuneCooldown(rune))
         if not rune or rune > 6 or rune < 1 then
             return
         elseif not usable then
-			RIA.cdFrame[rune]:SetScript("OnUpdate", function() RIA.cdTextUpdate(rune) end)
+			self.cdFrame[rune]:SetScript("OnUpdate", function() self:cdTextUpdate(rune) end)
 			if (RIADB.images == "0") then
-				RIA.border[RIA.runeSwap(rune)]:SetAlpha(0.3)
+				self.border[self:runeSwap(rune)]:SetAlpha(0.3)
 			end
 			if (RIADB.images == "7") then
-				RIA.tex[RIA.runeSwap(rune)]:SetVertexColor(0.3,0.3,0.3,0.9)
+				self.tex[self:runeSwap(rune)]:SetVertexColor(0.3,0.3,0.3,0.9)
 			else
-				RIA.tex[RIA.runeSwap(rune)]:SetVertexColor(0.4,0.4,0.4,RIADB.cdalpha)
+				self.tex[self:runeSwap(rune)]:SetVertexColor(0.4,0.4,0.4,RIADB.cdalpha)
 			end
 			if RIADB.display_used == "1" and InCombatLockdown() == nil then
-				RIA.setAlpha(RIADB.alphain)
+				self:setAlpha(RIADB.alphain)
 			end
         elseif usable then
 			if (RIADB.images == "0" or RIADB.images == "7") then
-				RIA.border[RIA.runeSwap(rune)]:SetAlpha(1)
+				self.border[self:runeSwap(rune)]:SetAlpha(1)
 			end
-			RIA.tex[RIA.runeSwap(rune)]:SetVertexColor(1,1,1,1)
+			self.tex[self:runeSwap(rune)]:SetVertexColor(1,1,1,1)
 			if --[[RIADB.display_used == "1" and ]]InCombatLockdown() == nil then
-				RIA.setAlpha(RIADB.alphaout)
+				self:setAlpha(RIADB.alphaout)
 			end
         end
     elseif (event == "COMBAT_LOG_EVENT_UNFILTERED") then
@@ -146,7 +146,7 @@ function RIA:OnEvent(event, ...)
         if (eventType == "UNIT_DIED") then
             local name = select(4, ...)
             if (name == UnitName("player")) then
-                RIA.setTexture(RIADB.images)
+                self:setTexture(RIADB.images)
             end
         end
     end
@@ -181,53 +181,53 @@ end]]
 
 function RIA:setLayout(newValue)
 	if RIADB.moving == "0" then
-		RIA:clearPoints()
+		self:clearPoints()
 		if newValue == "1" then
-			RIA.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
-			RIA.runes[2]:SetPoint("BOTTOM", RIA.runes[1], "TOP", 0, -42)
-			RIA.runes[3]:SetPoint("BOTTOM", RIA.runes[2], "TOP", 0, -42)
-			RIA.runes[4]:SetPoint("BOTTOM", RIA.runes[3], "TOP", 0, -42)
-			RIA.runes[5]:SetPoint("BOTTOM", RIA.runes[4], "TOP", 0, -42)
-			RIA.runes[6]:SetPoint("BOTTOM", RIA.runes[5], "TOP", 0, -42)
+			self.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
+			self.runes[2]:SetPoint("BOTTOM", self.runes[1], "TOP", 0, -42)
+			self.runes[3]:SetPoint("BOTTOM", self.runes[2], "TOP", 0, -42)
+			self.runes[4]:SetPoint("BOTTOM", self.runes[3], "TOP", 0, -42)
+			self.runes[5]:SetPoint("BOTTOM", self.runes[4], "TOP", 0, -42)
+			self.runes[6]:SetPoint("BOTTOM", self.runes[5], "TOP", 0, -42)
 		elseif newValue == "0" then -- HORIZONTAL
-			RIA.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
-			RIA.runes[2]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 4, 0)
-			RIA.runes[3]:SetPoint("LEFT", RIA.runes[2], "RIGHT", 4, 0)
-			RIA.runes[4]:SetPoint("LEFT", RIA.runes[3], "RIGHT", 4, 0)
-			RIA.runes[5]:SetPoint("LEFT", RIA.runes[4], "RIGHT", 4, 0)
-			RIA.runes[6]:SetPoint("LEFT", RIA.runes[5], "RIGHT", 4, 0)
+			self.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
+			self.runes[2]:SetPoint("LEFT", self.runes[1], "RIGHT", 4, 0)
+			self.runes[3]:SetPoint("LEFT", self.runes[2], "RIGHT", 4, 0)
+			self.runes[4]:SetPoint("LEFT", self.runes[3], "RIGHT", 4, 0)
+			self.runes[5]:SetPoint("LEFT", self.runes[4], "RIGHT", 4, 0)
+			self.runes[6]:SetPoint("LEFT", self.runes[5], "RIGHT", 4, 0)
 		elseif newValue == "2" then -- VERTICAL BLOCK
-			RIA.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
-			RIA.runes[2]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 4, 0)
-			RIA.runes[3]:SetPoint("BOTTOM", RIA.runes[1], "BOTTOM", 0, -22)
-			RIA.runes[4]:SetPoint("BOTTOM", RIA.runes[2], "BOTTOM", 0, -22)
-			RIA.runes[5]:SetPoint("BOTTOM", RIA.runes[3], "BOTTOM", 0, -22)
-			RIA.runes[6]:SetPoint("BOTTOM", RIA.runes[4], "BOTTOM", 0, -22)
+			self.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
+			self.runes[2]:SetPoint("LEFT", self.runes[1], "RIGHT", 4, 0)
+			self.runes[3]:SetPoint("BOTTOM", self.runes[1], "BOTTOM", 0, -22)
+			self.runes[4]:SetPoint("BOTTOM", self.runes[2], "BOTTOM", 0, -22)
+			self.runes[5]:SetPoint("BOTTOM", self.runes[3], "BOTTOM", 0, -22)
+			self.runes[6]:SetPoint("BOTTOM", self.runes[4], "BOTTOM", 0, -22)
 		elseif newValue == "3" then -- UP CURVE
-			RIA.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
-			RIA.runes[2]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 6, 26)
-			RIA.runes[3]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 40, 36)
-			RIA.runes[4]:SetPoint("LEFT", RIA.runes[3], "RIGHT", 12, 0)
-			RIA.runes[5]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 102, 26)
-			RIA.runes[6]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 125, 0)
+			self.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
+			self.runes[2]:SetPoint("LEFT", self.runes[1], "RIGHT", 6, 26)
+			self.runes[3]:SetPoint("LEFT", self.runes[1], "RIGHT", 40, 36)
+			self.runes[4]:SetPoint("LEFT", self.runes[3], "RIGHT", 12, 0)
+			self.runes[5]:SetPoint("LEFT", self.runes[1], "RIGHT", 102, 26)
+			self.runes[6]:SetPoint("LEFT", self.runes[1], "RIGHT", 125, 0)
 		elseif newValue == "4" then -- HORIZONTAL BLOCK
-			RIA.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
-			RIA.runes[2]:SetPoint("BOTTOM", RIA.runes[1], "BOTTOM", 0, -22)
-			RIA.runes[3]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 4, 0)
-			RIA.runes[4]:SetPoint("LEFT", RIA.runes[2], "RIGHT", 4, 0)
-			RIA.runes[5]:SetPoint("LEFT", RIA.runes[3], "RIGHT", 4, 0)
-			RIA.runes[6]:SetPoint("LEFT", RIA.runes[4], "RIGHT", 4, 0)
+			self.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
+			self.runes[2]:SetPoint("BOTTOM", self.runes[1], "BOTTOM", 0, -22)
+			self.runes[3]:SetPoint("LEFT", self.runes[1], "RIGHT", 4, 0)
+			self.runes[4]:SetPoint("LEFT", self.runes[2], "RIGHT", 4, 0)
+			self.runes[5]:SetPoint("LEFT", self.runes[3], "RIGHT", 4, 0)
+			self.runes[6]:SetPoint("LEFT", self.runes[4], "RIGHT", 4, 0)
 		elseif newValue == "5" then -- DOWN CURVE
-			RIA.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
-			RIA.runes[2]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 6, -26)
-			RIA.runes[3]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 40, -36)
-			RIA.runes[4]:SetPoint("LEFT", RIA.runes[3], "RIGHT", 12, 0)
-			RIA.runes[5]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 102, -26)
-			RIA.runes[6]:SetPoint("LEFT", RIA.runes[1], "RIGHT", 125, 0)
+			self.runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
+			self.runes[2]:SetPoint("LEFT", self.runes[1], "RIGHT", 6, -26)
+			self.runes[3]:SetPoint("LEFT", self.runes[1], "RIGHT", 40, -36)
+			self.runes[4]:SetPoint("LEFT", self.runes[3], "RIGHT", 12, 0)
+			self.runes[5]:SetPoint("LEFT", self.runes[1], "RIGHT", 102, -26)
+			self.runes[6]:SetPoint("LEFT", self.runes[1], "RIGHT", 125, 0)
 		end
 	else -- INDIVIDUAL MOVING
 		for i = 1, 6 do
-			RIA.runes[i]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.ind_x[i], RIADB.ind_y[i])
+			self.runes[i]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.ind_x[i], RIADB.ind_y[i])
 		end
 	end
 end
@@ -237,12 +237,12 @@ function RIA:setTexture(newValue)
     if newValue == "1" then -- BETA RUNES
         hide = true
         for i = 1, 6 do
-            RIA.border[i]:Hide()
+            self.border[i]:Hide()
             if runica == true then
-                RIA.overlay[i]:SetTexture(nil)
-                RIA.tex[i]:SetTexCoord(0,1,0,1)
-                RIA.runes[i]:SetHeight(18)
-                RIA.runes[i]:SetWidth(18)
+                self.overlay[i]:SetTexture(nil)
+                self.tex[i]:SetTexCoord(0,1,0,1)
+                self.runes[i]:SetHeight(18)
+                self.runes[i]:SetWidth(18)
             end
         end
         iconTextures[RUNETYPE_BLOOD] = path.."beta\\blood.blp"
@@ -252,15 +252,15 @@ function RIA:setTexture(newValue)
     elseif newValue == "0" then -- DEFAULT RUNES
         hide = false
         for i = 1, 6 do
-            RIA.border[i]:Show()
-            RIA.cooldown[i]:Show()
+            self.border[i]:Show()
+            self.cooldown[i]:Show()
             if runica == true then
-                RIA.tex[i]:SetTexCoord(0,1,0,1)
-                RIA.runes[i]:SetHeight(18)
-                RIA.runes[i]:SetWidth(18)
-                RIA.cooldown[i]:SetWidth(18)
-                RIA.cooldown[i]:SetHeight(18)
-                RIA.overlay[i]:SetTexture(nil)
+                self.tex[i]:SetTexCoord(0,1,0,1)
+                self.runes[i]:SetHeight(18)
+                self.runes[i]:SetWidth(18)
+                self.cooldown[i]:SetWidth(18)
+                self.cooldown[i]:SetHeight(18)
+                self.overlay[i]:SetTexture(nil)
             end
         end
         iconTextures[RUNETYPE_BLOOD] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood.blp"
@@ -270,12 +270,12 @@ function RIA:setTexture(newValue)
     elseif newValue == "2" then -- DKI RUNES
         hide = true
         for i = 1, 6 do
-            RIA.border[i]:Hide()
+            self.border[i]:Hide()
             if runica == true then
-                RIA.overlay[i]:SetTexture(nil)
-                RIA.tex[i]:SetTexCoord(0,1,0,1)
-                RIA.runes[i]:SetHeight(18)
-                RIA.runes[i]:SetWidth(18)
+                self.overlay[i]:SetTexture(nil)
+                self.tex[i]:SetTexCoord(0,1,0,1)
+                self.runes[i]:SetHeight(18)
+                self.runes[i]:SetWidth(18)
             end
         end
         iconTextures[RUNETYPE_BLOOD] = path.."DKI\\blood.tga"
@@ -285,12 +285,12 @@ function RIA:setTexture(newValue)
     elseif newValue == "3" then -- LETTER RUNES
         hide = true
         for i = 1, 6 do
-            RIA.border[i]:Hide()
+            self.border[i]:Hide()
             if runica == true then
-                RIA.overlay[i]:SetTexture(nil)
-                RIA.tex[i]:SetTexCoord(0,1,0,1)
-                RIA.runes[i]:SetHeight(18)
-                RIA.runes[i]:SetWidth(18)
+                self.overlay[i]:SetTexture(nil)
+                self.tex[i]:SetTexCoord(0,1,0,1)
+                self.runes[i]:SetHeight(18)
+                self.runes[i]:SetWidth(18)
             end
         end
         iconTextures[RUNETYPE_BLOOD] = path.."letter\\blood.tga"
@@ -300,12 +300,12 @@ function RIA:setTexture(newValue)
     elseif newValue == "4" then -- ORB RUNES
         hide = true
         for i = 1, 6 do
-            RIA.border[i]:Hide()
+            self.border[i]:Hide()
             if runica == true then
-                RIA.overlay[i]:SetTexture(nil)
-                RIA.tex[i]:SetTexCoord(0,1,0,1)
-                RIA.runes[i]:SetHeight(18)
-                RIA.runes[i]:SetWidth(18)
+                self.overlay[i]:SetTexture(nil)
+                self.tex[i]:SetTexCoord(0,1,0,1)
+                self.runes[i]:SetHeight(18)
+                self.runes[i]:SetWidth(18)
             end
         end
         iconTextures[RUNETYPE_BLOOD] = path.."orb\\blood.tga"
@@ -315,12 +315,12 @@ function RIA:setTexture(newValue)
     elseif newValue == "5" then -- ENHANCED BETA RUNES
         hide = true
         for i = 1, 6 do
-            RIA.border[i]:Hide()
+            self.border[i]:Hide()
             if runica == true then
-                RIA.overlay[i]:SetTexture(nil)
-                RIA.tex[i]:SetTexCoord(0,1,0,1)
-                RIA.runes[i]:SetHeight(18)
-                RIA.runes[i]:SetWidth(18)
+                self.overlay[i]:SetTexture(nil)
+                self.tex[i]:SetTexCoord(0,1,0,1)
+                self.runes[i]:SetHeight(18)
+                self.runes[i]:SetWidth(18)
             end
         end
         iconTextures[RUNETYPE_BLOOD] = path.."beta-enhanced\\blood.tga"
@@ -330,12 +330,12 @@ function RIA:setTexture(newValue)
     elseif newValue == "6" then -- JAPANESE RUNES
         hide = true
         for i = 1, 6 do
-            RIA.border[i]:Hide()
+            self.border[i]:Hide()
             if runica == true then
-                RIA.overlay[i]:SetTexture(nil)
-                RIA.tex[i]:SetTexCoord(0,1,0,1)
-                RIA.runes[i]:SetHeight(18)
-                RIA.runes[i]:SetWidth(18)
+                self.overlay[i]:SetTexture(nil)
+                self.tex[i]:SetTexCoord(0,1,0,1)
+                self.runes[i]:SetHeight(18)
+                self.runes[i]:SetWidth(18)
             end
         end
         iconTextures[RUNETYPE_BLOOD] = path.."japanese\\blood.tga"
@@ -346,46 +346,46 @@ function RIA:setTexture(newValue)
         hide = false
         runica = true
         for i = 1, 6 do
-            RIA.tex[i]:SetTexCoord(0.1,0.9,0.1,0.9)
-            RIA.border[i]:Hide()
-            RIA.runes[i]:SetHeight(21)
-            RIA.runes[i]:SetWidth(21)
-            RIA.cooldown[i]:Show()
-            RIA.cooldown[i]:SetWidth(22)
-            RIA.cooldown[i]:SetHeight(22)
-            RIA.overlay[i] = RIA.runes[i]:CreateTexture("RuneButtonIndividual"..i.."Overlay", "OVERLAY")
-            RIA.overlay[i]:SetTexture(path.."runica\\RIA.border.tga")
-            RIA.overlay[i]:SetAllPoints(RIA.tex[i])
+            self.tex[i]:SetTexCoord(0.1,0.9,0.1,0.9)
+            self.border[i]:Hide()
+            self.runes[i]:SetHeight(21)
+            self.runes[i]:SetWidth(21)
+            self.cooldown[i]:Show()
+            self.cooldown[i]:SetWidth(22)
+            self.cooldown[i]:SetHeight(22)
+            self.overlay[i] = self.runes[i]:CreateTexture("RuneButtonIndividual"..i.."Overlay", "OVERLAY")
+            self.overlay[i]:SetTexture(path.."runica\\border.tga")
+            self.overlay[i]:SetAllPoints(self.tex[i])
         end
         iconTextures[RUNETYPE_BLOOD] = path.."runica\\blood.tga"
         iconTextures[RUNETYPE_UNHOLY] = path.."runica\\unholy.tga"
         iconTextures[RUNETYPE_FROST] = path.."runica\\frost.tga"
         iconTextures[RUNETYPE_DEATH] = path.."runica\\death.tga"
     end
-    RIA.tex[1]:SetTexture(iconTextures[1])
-    RIA.tex[2]:SetTexture(iconTextures[1])
-    RIA.tex[3]:SetTexture(iconTextures[3])
-    RIA.tex[4]:SetTexture(iconTextures[3])
-    RIA.tex[5]:SetTexture(iconTextures[2])
-    RIA.tex[6]:SetTexture(iconTextures[2])
+    self.tex[1]:SetTexture(iconTextures[1])
+    self.tex[2]:SetTexture(iconTextures[1])
+    self.tex[3]:SetTexture(iconTextures[3])
+    self.tex[4]:SetTexture(iconTextures[3])
+    self.tex[5]:SetTexture(iconTextures[2])
+    self.tex[6]:SetTexture(iconTextures[2])
 end
 
 function RIA:clearPoints()
     for i = 1, 6 do
-        RIA.runes[i]:ClearAllPoints()
+        self.runes[i]:ClearAllPoints()
     end
 end
 
 function RIA:runeUpdate(rune)
 	local runeType = GetRuneType(rune)
-	local rune = RIA:runeSwap(rune)
+	local rune = self:runeSwap(rune)
     
     if (rune ~= 7 and rune ~= 8) then
         if (runeType) then
-            RIA.tex[rune]:Show()
-            RIA.tex[rune]:SetTexture(iconTextures[runeType])
+            self.tex[rune]:Show()
+            self.tex[rune]:SetTexture(iconTextures[runeType])
         else
-            RIA.tex[rune]:Hide()
+            self.tex[rune]:Hide()
         end
     end
 end
@@ -431,41 +431,41 @@ for i = 1, 6 do
 	RIA.fonts[i]:SetPoint("CENTER", RIA.runes[i])
 end
 function RIA:setLocked(newValue)
-	RIA.clearPoints()
+	self:clearPoints()
     if newValue == "1" then
 		if RIADB.moving == "0" then
-			RIA.fonts[1]:SetText("|cffffffffX|r")
-			RIA.fonts[1]:SetPoint("CENTER", RIA.runes[1])
-			RIA.fonts[1]:Show()
-			RIA.runes[1]:EnableMouse(true)
-			RIA.runes[1]:SetMovable(true)
-			RIA.runes[1]:RegisterForDrag("LeftButton")
-			RIA.setLayout(RIADB.layout)
-			RIA.runes[1]:SetScript("OnDragStart", function() RIA.runes[1]:StartMoving() end)
-			RIA.runes[1]:SetScript("OnDragStop", function() RIA.runes[1]:StopMovingOrSizing()
-			RIADB.x, RIADB.y = RIA.runes[1]:GetLeft(), RIA.runes[1]:GetBottom() end)
+			self.fonts[1]:SetText("|cffffffffX|r")
+			self.fonts[1]:SetPoint("CENTER", self.runes[1])
+			self.fonts[1]:Show()
+			self.runes[1]:EnableMouse(true)
+			self.runes[1]:SetMovable(true)
+			self.runes[1]:RegisterForDrag("LeftButton")
+			self:setLayout(RIADB.layout)
+			self.runes[1]:SetScript("OnDragStart", function() self.runes[1]:StartMoving() end)
+			self.runes[1]:SetScript("OnDragStop", function() self.runes[1]:StopMovingOrSizing()
+			RIADB.x, RIADB.y = self.runes[1]:GetLeft(), self.runes[1]:GetBottom() end)
 		elseif RIADB.moving == "1" then
 			for i = 1, 6 do
-				RIA.fonts[i]:SetText("|cffffffffX|r")
-				RIA.fonts[i]:Show()
-				RIA.runes[i]:EnableMouse(true)
-				RIA.runes[i]:SetMovable(true)
-				RIA.runes[i]:RegisterForDrag("LeftButton")
-				RIA.runes[i]:SetScript("OnDragStart", function() RIA.runes[i]:StartMoving() end)
-				RIA.runes[i]:SetScript("OnDragStop", function() RIA.runes[i]:StopMovingOrSizing()
-				RIADB.ind_x[i], RIADB.ind_y[i] = RIA.runes[i]:GetLeft(), RIA.runes[i]:GetBottom() end)
+				self.fonts[i]:SetText("|cffffffffX|r")
+				self.fonts[i]:Show()
+				self.runes[i]:EnableMouse(true)
+				self.runes[i]:SetMovable(true)
+				self.runes[i]:RegisterForDrag("LeftButton")
+				self.runes[i]:SetScript("OnDragStart", function() self.runes[i]:StartMoving() end)
+				self.runes[i]:SetScript("OnDragStop", function() self.runes[i]:StopMovingOrSizing()
+				RIADB.ind_x[i], RIADB.ind_y[i] = self.runes[i]:GetLeft(), self.runes[i]:GetBottom() end)
 			end
 		end
     elseif newValue == "0" then
 		if RIADB.moving == "0" then
-			RIA.fonts[1]:Hide()
-			RIA.runes[1]:EnableMouse(false)
-			RIA.runes[1]:SetMovable(false)
+			self.fonts[1]:Hide()
+			self.runes[1]:EnableMouse(false)
+			self.runes[1]:SetMovable(false)
 		elseif RIADB.moving == "1" then
 			for i = 1, 6 do
-				RIA.fonts[i]:Hide()
-				RIA.runes[i]:EnableMouse(false)
-				RIA.runes[i]:SetMovable(false)
+				self.fonts[i]:Hide()
+				self.runes[i]:EnableMouse(false)
+				self.runes[i]:SetMovable(false)
 			end
 		end
     end
@@ -473,32 +473,32 @@ end
 
 function RIA:setScale(newValue)
     for i = 1, 6 do
-        RIA.runes[i]:SetScale(newValue)
+        self.runes[i]:SetScale(newValue)
     end
 end
 
 function RIA:setAlpha(newValue)
 	for i = 1, 6 do
-		RIA.runes[i]:SetAlpha(newValue)
+		self.runes[i]:SetAlpha(newValue)
 	end
 end
 
 function RIA:setHorizontalPadding(newValue)
 	if RIADB.moving == "0" and (RIADB.layout == "0") or (RIADB.layout == "1") then
-		RIA.clearPoints()
-		RIA.setLayout(RIADB.layout)
+		self:clearPoints()
+		self:setLayout(RIADB.layout)
 		for i = 2, 6 do
-			RIA.runes[i]:SetPoint("LEFT", RIA.runes[i-1], "RIGHT", tonumber(newValue), 0)
+			self.runes[i]:SetPoint("LEFT", self.runes[i-1], "RIGHT", tonumber(newValue), 0)
 		end
 	end
 end
 
 function RIA:setVerticalPadding(newValue)
 	if RIADB.moving == "0" and (RIADB.layout == "0") or (RIADB.layout == "1") then
-		RIA.clearPoints()
-		RIA.setLayout(RIADB.layout)
+		self:clearPoints()
+		self:setLayout(RIADB.layout)
 		for i = 2, 6 do
-			RIA.runes[i]:SetPoint("TOP", RIA.runes[i-1], "BOTTOM", 0, -tonumber(newValue))
+			self.runes[i]:SetPoint("TOP", self.runes[i-1], "BOTTOM", 0, -tonumber(newValue))
 		end
 	end
 end
@@ -510,7 +510,7 @@ local runeColors = {
 	[RUNETYPE_DEATH]  = {0.8, 0.1, 1}
 }
 
---[[ Credit to Yury's RuneDisplay for RIA.cooldown code ]]--
+--[[ Credit to Yury's RuneDisplay for cooldown code ]]--
 --[[ Credit to Parnic for coding help ]]--
 
 -- Setup CD texts
@@ -527,7 +527,7 @@ end
 function RIA:setCDFontSize(newValue)
 	RIADB.cdfs = newValue
 	for i = 1, 6 do
-		RIA.cdText[i]:SetFont("Fonts\\FRIZQT__.TTF", newValue)
+		self.cdText[i]:SetFont("Fonts\\FRIZQT__.TTF", newValue)
 	end
 end
 
@@ -535,27 +535,27 @@ end
 function RIA:cdTextUpdate(rune)
 	local start, duration, runeReady = GetRuneCooldown(rune)
 	if (RIADB.cdtext == "1") then
-		local apply, time = RIA.cooldownUpdate(rune, start, duration, runeReady)
+		local apply, time = self:cooldownUpdate(rune, start, duration, runeReady)
 		if (apply) then
-			RIA.ccCount(rune, time)
+			self:ccCount(rune, time)
 		end
 	end
 	if (runeReady) then
-		RIA.cdFrame[rune]:SetScript("OnUpdate", nil)
+		self.cdFrame[rune]:SetScript("OnUpdate", nil)
 	end
 end
 
 -- Set and color the RIA.cooldown texts
 RIA.lastUpdate = {0, 0, 0, 0, 0, 0}
 function RIA:ccCount(rune, time)
-	RIA.lastUpdate[rune] = GetTime()
+	self.lastUpdate[rune] = GetTime()
 	local time = floor(time + 0.5)
 	local color = {1,1,0}
 
 	if (time == 0) then
 		time = ""
 	elseif (RIADB.color == "1") then
-		color = runeColors[GetRuneType(RIA.runeSwap(rune))]
+		color = runeColors[GetRuneType(self:runeSwap(rune))]
 	elseif (RIADB.color == "2") then
 		local r = RIADB.color_picker.r
 		local g = RIADB.color_picker.g
@@ -563,13 +563,13 @@ function RIA:ccCount(rune, time)
 		local o = RIADB.color_picker.opacity
 		color = {r,g,b,o}
 	elseif (time < 3) then
-		local _,g,_ = RIA.cdText[RIA.runeSwap(rune)]:GetTextColor()
+		local _,g,_ = self.cdText[self:runeSwap(rune)]:GetTextColor()
 		if (g > 0.5) then color = {1,0,0} end
 	end
 
-	rune = RIA.runeSwap(rune)
-	RIA.cdText[rune]:SetTextColor(unpack(color))
-	RIA.cdText[rune]:SetText(time)
+	rune = self:runeSwap(rune)
+	self.cdText[rune]:SetTextColor(unpack(color))
+	self.cdText[rune]:SetText(time)
 end
 
 function RIA:runeSwap(rune)
