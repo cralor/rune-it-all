@@ -1,9 +1,11 @@
+local _, RIA = ...
+
 local function defaultLocale(L, key)
 	return key
 end
-RIA_localeDB = setmetatable({}, {__index=defaultLocale})
+RIA.locales = setmetatable({}, {__index=defaultLocale})
 
-local L = RIA_localeDB
+local L = RIA.locales
 
 local loc = GetLocale()
 
