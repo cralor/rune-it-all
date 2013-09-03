@@ -59,7 +59,7 @@ function RIA:refreshState()
     for i = 1, 6 do
         runes[i]:Show()
     end
-    self:clearPoints()
+    self.clearPoints()
 	self:setAlpha(RIADB.alphaout)
 	self:setScale(RIADB.scale)
 	self:setLayout(RIADB.layout)
@@ -192,7 +192,7 @@ end]]
 
 function RIA:setLayout(newValue)
 	if RIADB.moving == "0" then
-		self:clearPoints()
+		self.clearPoints()
 		if newValue == "1" then
 			runes[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", RIADB.x, RIADB.y)
 			runes[2]:SetPoint("BOTTOM", runes[1], "TOP", 0, -42)
@@ -381,7 +381,7 @@ function RIA:setTexture(newValue)
     tex[6]:SetTexture(iconTextures[2])
 end
 
-function RIA:clearPoints()
+function RIA.clearPoints()
     for i = 1, 6 do
         runes[i]:ClearAllPoints()
     end
@@ -442,7 +442,7 @@ for i = 1, 6 do
 	fonts[i]:SetPoint("CENTER", runes[i])
 end
 function RIA:setLocked(newValue)
-	self:clearPoints()
+	self.clearPoints()
     if newValue == "1" then
 		if RIADB.moving == "0" then
 			fonts[1]:SetText("|cffffffffX|r")
@@ -496,7 +496,7 @@ end
 
 function RIA:setHorizontalPadding(newValue)
 	if RIADB.moving == "0" and (RIADB.layout == "0") or (RIADB.layout == "1") then
-		self:clearPoints()
+		self.clearPoints()
 		self:setLayout(RIADB.layout)
 		for i = 2, 6 do
 			runes[i]:SetPoint("LEFT", runes[i-1], "RIGHT", tonumber(newValue), 0)
@@ -506,7 +506,7 @@ end
 
 function RIA:setVerticalPadding(newValue)
 	if RIADB.moving == "0" and (RIADB.layout == "0") or (RIADB.layout == "1") then
-		self:clearPoints()
+		self.clearPoints()
 		self:setLayout(RIADB.layout)
 		for i = 2, 6 do
 			runes[i]:SetPoint("TOP", runes[i-1], "BOTTOM", 0, -tonumber(newValue))

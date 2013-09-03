@@ -59,7 +59,7 @@ local optionTable = {
 			type = CONTROLTYPE_CHECKBOX;
 			defaultValue = "0";
 			point = {"LEFT", "moving", "RIGHT", 20, 0};
-			callback = RIA.setLocked;
+			callback = function(...) print(...) RIA.setLocked(RIA, ...) end;
 		};
 		--[[{
 			id = "display_used";
@@ -108,7 +108,7 @@ local optionTable = {
                 };
 			};
 			point = {"TOP", "moving", "BOTTOM", -5, -25};
-            callback = RIA.setLayout;
+            callback = function(...) print(...) RIA.setLayout(RIA, ...) end;
 		};
         {
             id = "images";
@@ -150,7 +150,7 @@ local optionTable = {
                 };
             };
 			point = {"LEFT", "layout", "RIGHT", 15, 0};
-            callback = RIA.setTexture;
+            callback = function(...) print(...) RIA.setTexture(RIA,...) end;
         };
 		{
             id = "entv";
@@ -185,7 +185,7 @@ local optionTable = {
             type = CONTROLTYPE_SLIDER;
             defaultValue = "1.2";
 			point = {nil, "layout", nil, nil, -25};
-            callback = RIA.setScale;
+            callback = function(...) print(...) RIA.setScale(RIA, ...) end;
         };
 		{
             id = "cdalpha";
@@ -225,7 +225,7 @@ local optionTable = {
             type = CONTROLTYPE_SLIDER;
             defaultValue = "0.5";
 			point = {"LEFT", "alphain", "RIGHT", 20, 0};
-            callback = RIA.setAlpha;
+            callback = function(...) print(...) RIA.setAlpha(RIA, ...) end;
         };
 		{
 			id = "horizontal";
@@ -239,7 +239,7 @@ local optionTable = {
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "4";
 			point = {"TOP", "alphain", "BOTTOM", 0, -25};
-			callback = RIA.setHorizontalPadding;
+			callback = function(...) print(...) RIA.setHorizontalPadding(RIA, ...) end;
 		};
 		{
 			id = "vertical";
@@ -253,7 +253,7 @@ local optionTable = {
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "-18";
 			point = {"LEFT", "horizontal", "RIGHT", 20, 0};
-			callback = RIA.setVerticalPadding;
+			callback = function(...) print(...) RIA.setVerticalPadding(RIA, ...) end;
 		};
 		{
 			id = "CDHeader";
@@ -308,7 +308,7 @@ local optionTable = {
 			type = CONTROLTYPE_SLIDER;
 			defaultValue = "14";
 			point = {"LEFT", "cdtext", "RIGHT", 150, 0};
-			callback = RIA.setCDFontSize;
+			callback = function(...) print(...) RIA.setCDFontSize(RIA, ...) end;
 		};
 	};
 	savedVarTable = "RIADB";
