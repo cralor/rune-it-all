@@ -7,8 +7,7 @@ Customizable Death Knight rune interface for World of Warcraft
 Description
 -----------
 
-Rune-It-All adds more features and functionality to the default rune frame while still using the Blizzard code.
-The goal of Rune-It-All is to be simple yet rich. I hope Rune-It-All provides you with the features you are looking for while maintaining a simple, unobtrusive, and painless feel.
+Rune-It-All adds more features and functionality to Blizzard's rune frame, including size, movement, transparency, cooldown text, various art styles, and more.
 
 Rune-It-All does the following:
 
@@ -27,22 +26,6 @@ Notes
 -----
 
 Options can be accessed by typing `/ria`, `/runeitall`, or `/rune-it-all`<br />
-If you are using Pitbull:<br />
-Config. > Modules > Hide Blizzard frames > UNCHECK "Rune bar"<br />
-Config. > Modules > Runes > UNCHECK "Enable"
-
-If you are using Shadowed UF:<br />
-/suf > General > Hide Blizzard Frames > UNCHECK "Hide Rune bar"<br />
-/suf > Units > Player > Bars > UNCHECK "Enable Rune bar"<br />
-/console reloadui
-
-If you are using X-Perl:<br />
-/xperl > Player > UNCHECK "Show Runes"<br />
-
-EDIT line 68-69 in XPerl_Player.lua file to this:
-
-`--XPerl_Player_InitDK(self)`<br />
-`--XPerl_Player_SetupDK(self)`
 
 Credits
 -------
