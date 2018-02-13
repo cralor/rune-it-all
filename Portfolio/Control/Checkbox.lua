@@ -16,18 +16,18 @@ function Portfolio.Control.Checkbox.Register(optionsFrame, option)
 	--Checkbox
 	local controlName = optionsFrame:GetName()..option.id
 	local control = CreateFrame("CheckButton", controlName, optionsFrame.scrollChild, "OptionsCheckButtonTemplate")
-	
+
 	--Copy Vars
 	Portfolio.CopyTableElements(control, option, "tooltipText", "callback", "dependentControls", "dependentControlsByID", "invert")
-	
+
 	Portfolio.InitField(control, option, "xOffset")
 	Portfolio.InitField(control, option, "xOffsetRelative")
 	Portfolio.InitField(control, option, "yOffset")
 	Portfolio.InitField(control, option, "yOffsetRelative")
-	
+
 	Portfolio.PopulateCommonControl(optionsFrame, option, CONTROLTYPE_CHECKBOX, control)
 	Portfolio.PopulateValueControl(optionsFrame, option, control)
-	
+
 	-- Frame Population
 	control.UpdateDependents = Portfolio.Control.Checkbox.UpdateDependents
 	control.GetValue = Portfolio.Control.GetValue
@@ -35,25 +35,25 @@ function Portfolio.Control.Checkbox.Register(optionsFrame, option)
 	control.Update = Portfolio.Control.Update
 	control.UpdateText = Portfolio.Control.Checkbox.UpdateText
 	control.SetText = Portfolio.Control.SetText
-	
+
 	control:SetScript("OnEnter", Portfolio.Control.OnEnter)
 	control:SetScript("OnClick", Portfolio.Control.Checkbox.OnClick)
-	
+
 	-- Enable
 	BlizzardOptionsPanel_CheckButton_Enable(control)
-	
+
 	-- Setup Frame Text
 	control:UpdateText()
-	
+
 	--control.currValue = "1"
 	--control.value = "1"
-	
+
 	Portfolio.InitDefaultValue(control)
-	
+
 	if type(option.init) == "function" then
 		option.init(control)
 	end
-	
+
 	return control
 end
 
@@ -69,7 +69,7 @@ end
 	@param self		checkbox control
 	@param value	("1" or "0") new value
 	@param isGUI	(boolean) called from a GUI interaction, passed to the callback
-	@param isUpdate	(boolean) called from control:Update(), passed to the callback 
+	@param isUpdate	(boolean) called from control:Update(), passed to the callback
 	@usage			control:SetValue(value)
 --]]--
 function Portfolio.Control.Checkbox.SetValue(self, value, isGUI, isUpdate)
@@ -81,7 +81,7 @@ function Portfolio.Control.Checkbox.SetValue(self, value, isGUI, isUpdate)
 end
 
 --[[-- Update the dependant controls.
-	From control.dependentControlsByID by control id 
+	From control.dependentControlsByID by control id
 	or from control.dependentControlsByID by frame.
 
 	@name			UpdateDependents
@@ -153,9 +153,9 @@ end
 function Portfolio.Control.Checkbox.OnClick(self)
 	local checked = self:GetChecked()
 	if checked then
-		PlaySound("igMainMenuOptionCheckBoxOn")
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 	else
-		PlaySound("igMainMenuOptionCheckBoxOff")
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 	end
 	local value = checked and not self.invert and "1" or "0"
 	self:SetValue(value, true)

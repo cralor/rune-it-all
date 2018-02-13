@@ -5,20 +5,25 @@ local name, table = ...
 table.ria = table.ria or CreateFrame("Frame", "RIAFrame", UIParent)
 local ria = table.ria
 
-local CURRENT_MAX_RUNES = 0
-local MAX_RUNE_CAPACITY = 7
+local MAX_NUM_RUNES = 6
 local IMAGES_PATH = "Interface\\AddOns\\RuneItAll\\images\\"
 local r, o, t, b, cdText = {}, {}, {}, {}, {}
 
 local runeColors = {
-	["BLOOD"]  = {1,   0,   0},
-	["UNHOLY"] = {0,   0.5, 0},
-	["FROST"]  = {0,   1,   1},
-	["DEATH"]  = {0.8, 0.1, 1}
+	["Blood"]  = {1,   0,   0},
+	["Unholy"] = {0,   0.5, 0},
+	["Frost"]  = {0,   1,   1},
+	["Death"]  = {0.8, 0.1, 1}
+}
+
+local RUNE_KEY_BY_SPEC = {
+	[1] = "Blood",
+	[2] = "Frost",
+	[3] = "Unholy"
 }
 
 local iconTextures = {
-	["BLOOD"] = {
+	["Blood"] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood.blp",
 		["BETA"] = IMAGES_PATH.."beta\\blood.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\blood.tga",
@@ -29,7 +34,7 @@ local iconTextures = {
 		["RUNICA"] = IMAGES_PATH.."runica\\blood.tga",
 		["NEW_BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Ring.blp"
 	},
-	["DEATH"] = {
+	["Death"] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Death.blp",
 		["BETA"] = IMAGES_PATH.."beta\\death.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\death.tga",
@@ -40,7 +45,7 @@ local iconTextures = {
 		["RUNICA"] = IMAGES_PATH.."runica\\death.tga",
 		["NEW_BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Ring.blp"
 	},
-	["UNHOLY"] = {
+	["Unholy"] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Unholy.blp",
 		["BETA"] = IMAGES_PATH.."beta\\unholy.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\unholy.tga",
@@ -51,7 +56,7 @@ local iconTextures = {
 		["RUNICA"] = IMAGES_PATH.."runica\\unholy.tga",
 		["NEW_BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Ring.blp"
 	},
-	["FROST"] = {
+	["Frost"] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Frost.blp",
 		["BETA"] = IMAGES_PATH.."beta\\frost.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\frost.tga",
@@ -65,7 +70,7 @@ local iconTextures = {
 }
 
 local function CreateRuneButtonIndividualFrames()
-	for i=1,MAX_RUNE_CAPACITY do
+	for i=1,MAX_NUM_RUNES do
 		r[i] = CreateFrame("Button", "RBI"..i, ria)
 		r[i]:SetSize(18, 18)
 
@@ -86,31 +91,31 @@ local function CreateRuneButtonIndividualFrames()
 end
 
 function ria:clear()
-	for i=1,MAX_RUNE_CAPACITY do
+	for i=1,MAX_NUM_RUNES do
 		r[i]:ClearAllPoints()
 	end
 end
 
 function ria:alpha(val)
-	for i=1,MAX_RUNE_CAPACITY do
+	for i=1,MAX_NUM_RUNES do
 		r[i]:SetAlpha(val)
 	end
 end
 
 function ria:showRunes()
-	for i=1,CURRENT_MAX_RUNES do
+	for i=1,MAX_NUM_RUNES do
 		r[i]:Show()
 	end
 end
 
 function ria:hideRunes()
-	for i=1,CURRENT_MAX_RUNES do
+	for i=1,MAX_NUM_RUNES do
 		r[i]:Hide()
 	end
 end
 
 function ria:scale(val)
-	for i=1,MAX_RUNE_CAPACITY do
+	for i=1,MAX_NUM_RUNES do
 		r[i]:SetScale(val)
 	end
 end
@@ -124,17 +129,12 @@ function ria:init()
 	RuneFrame:SetAlpha(0)
 	RuneFrame:Hide()
 
-	for i = 1,MAX_RUNE_CAPACITY do
+	for i = 1,MAX_NUM_RUNES do
 		r[i]:SetClampedToScreen(true)
 		r[i]:SetFrameStrata("LOW")
 		r[i]:EnableMouse(false)
 		r[i]:Show()
 		t[i]:Show()
-
-		local old = _G["RuneButtonIndividual"..i]
-		old:Hide()
-		old:EnableMouse(false)
-		old:UnregisterAllEvents()
 
 		cdText[i] = ria:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 		cdText[i]:SetPoint("CENTER", r[i])
@@ -143,7 +143,6 @@ function ria:init()
 	end
 
 	self:RegisterEvent("RUNE_POWER_UPDATE")
-	self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
 	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", "player")
 	self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", "player")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -152,6 +151,7 @@ function ria:init()
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("PET_BATTLE_OPENING_START")
 	self:RegisterEvent("PET_BATTLE_CLOSE")
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	self:SetScript("OnEvent", function(self, event, ...)
 		events[event](self, ...)
 	end)
@@ -197,16 +197,15 @@ function events:RUNE_POWER_UPDATE(...)
 	self:RunePowerUpdate(runeIndex)
 end
 
-function events:UNIT_MAXPOWER()
-	self:UpdateRuneCount()
-end
-
 function events:PLAYER_ENTERING_WORLD()
-	self:UpdateRuneCount()
-	for i=1, CURRENT_MAX_RUNES do
+	for i=1, MAX_NUM_RUNES do
 		self:RunePowerUpdate(i)
 	end
 	self:refresh()
+end
+
+function events:PLAYER_SPECIALIZATION_CHANGED()
+	self:images(riaDb.textureChoice)
 end
 
 function events:PLAYER_REGEN_DISABLED()
@@ -244,7 +243,7 @@ function ria:updateCdText(runeIndex, start, duration, runeReady)
 	end
 end
 
-local cdLastUpdate = {0,0,0,0,0,0,0}
+local cdLastUpdate = {0,0,0,0,0,0}
 function ria:setCdText(runeIndex, time)
 	cdLastUpdate[runeIndex] = GetTime()
 	local time = floor(time + 0.5)
@@ -253,7 +252,11 @@ function ria:setCdText(runeIndex, time)
 	if (time == 0) then
 		time = ""
 	elseif (riaDb.cdTextColor == "RUNE_COLORS") then
-		color = runeColors[riaDb.runeType]
+		if riaDb.runeType == "SPEC" then
+			color = runeColors[RUNE_KEY_BY_SPEC[GetSpecialization()]]
+		else
+			color = runeColors[riaDb.runeType]
+		end
 	elseif (riaDb.cdTextColor == "CUSTOM_COLOR") then
 		color = {
 			riaDb.cdCustomColorPicker.r,
@@ -282,13 +285,13 @@ function ria:getCurrentCd(runeIndex, start, duration, runeReady)
 end
 
 function ria:setCdFontSize(newValue)
-	for i=1,MAX_RUNE_CAPACITY do
+	for i=1,MAX_NUM_RUNES do
 		cdText[i]:SetFont("Fonts\\FRIZQT__.TTF", newValue)
 	end
 end
 
 function ria:RunePowerUpdate(runeIndex)
-	if runeIndex and runeIndex >= 1 and runeIndex <= CURRENT_MAX_RUNES then
+	if runeIndex and runeIndex >= 1 and runeIndex <= MAX_NUM_RUNES then
 		local start, duration, runeReady = GetRuneCooldown(runeIndex)
 
 		if not runeReady then -- not usable
@@ -319,21 +322,9 @@ function ria:RunePowerUpdate(runeIndex)
 	end
 end
 
-function ria:UpdateRuneCount()
-	CURRENT_MAX_RUNES = UnitPowerMax("player", SPELL_POWER_RUNES)
-	for i=1, MAX_RUNE_CAPACITY do
-		if(i <= CURRENT_MAX_RUNES) then
-			r[i]:Show()
-		else
-			r[i]:Hide()
-		end
-	end
-end
-
 function ria:lock(unlocked)
 	self:clear()
 	if unlocked then
-		r[MAX_RUNE_CAPACITY]:Show()
 		if riaDb.unlockType == "SHAPE" then
 			t[1]:SetVertexColor(1,0,0,1)
 			r[1]:SetFrameStrata("HIGH")
@@ -345,7 +336,7 @@ function ria:lock(unlocked)
 			r[1]:SetScript("OnDragStop", function() r[1]:StopMovingOrSizing()
 			riaDb.x, riaDb.y = r[1]:GetLeft(), r[1]:GetBottom() end)
 		elseif riaDb.unlockType == "INDIVIDUAL" then
-			for i = 1,MAX_RUNE_CAPACITY do
+			for i = 1,MAX_NUM_RUNES do
 				t[i]:SetVertexColor(1,0,0,1)
 				r[i]:SetFrameStrata("HIGH")
 				r[i]:EnableMouse(true)
@@ -357,14 +348,13 @@ function ria:lock(unlocked)
 			end
 		end
 	else
-		r[MAX_RUNE_CAPACITY]:Hide()
 		if riaDb.unlockType == "SHAPE" then
 			t[1]:SetVertexColor(1,1,1,1)
 			r[1]:SetFrameStrata("LOW")
 			r[1]:EnableMouse(false)
 			r[1]:SetMovable(false)
 		elseif riaDb.unlockType == "INDIVIDUAL" then
-			for i = 1,MAX_RUNE_CAPACITY do
+			for i = 1,MAX_NUM_RUNES do
 				t[i]:SetVertexColor(1,1,1,1)
 				r[i]:SetFrameStrata("LOW")
 				r[i]:EnableMouse(false)
@@ -377,7 +367,7 @@ end
 function ria:setH(newValue)
 	if riaDb.unlockType == "SHAPE" and
 		(riaDb.layoutChoice == "HORIZONTAL") or (riaDb.layoutChoice == "VERTICAL") then
-		for i = 2,MAX_RUNE_CAPACITY do
+		for i = 2,MAX_NUM_RUNES do
 			r[i]:SetPoint("LEFT", r[i-1], "RIGHT", tonumber(newValue), 0)
 		end
 	end
@@ -386,7 +376,7 @@ end
 function ria:setV(newValue)
 	if riaDb.unlockType == "SHAPE" and
 		(riaDb.layoutChoice == "HORIZONTAL") or (riaDb.layoutChoice == "VERTICAL") then
-		for i = 2,MAX_RUNE_CAPACITY do
+		for i = 2,MAX_NUM_RUNES do
 			r[i]:SetPoint("TOP", r[i-1], "BOTTOM", 0, -tonumber(newValue))
 		end
 	end
@@ -402,7 +392,7 @@ function ria:orientation(newValue)
 			r[4]:SetPoint("BOTTOM", r[3], "TOP", 0, -42)
 			r[5]:SetPoint("BOTTOM", r[4], "TOP", 0, -42)
 			r[6]:SetPoint("BOTTOM", r[5], "TOP", 0, -42)
-			r[7]:SetPoint("BOTTOM", r[6], "TOP", 0, -42)
+			--r[7]:SetPoint("BOTTOM", r[6], "TOP", 0, -42)
 		elseif newValue == "HORIZONTAL" then
 			r[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", riaDb.x, riaDb.y)
 			r[2]:SetPoint("LEFT", r[1], "RIGHT", 3, 0)
@@ -410,7 +400,7 @@ function ria:orientation(newValue)
 			r[4]:SetPoint("LEFT", r[3], "RIGHT", 3, 0)
 			r[5]:SetPoint("LEFT", r[4], "RIGHT", 3, 0)
 			r[6]:SetPoint("LEFT", r[5], "RIGHT", 3, 0)
-			r[7]:SetPoint("LEFT", r[6], "RIGHT", 3, 0)
+			--r[7]:SetPoint("LEFT", r[6], "RIGHT", 3, 0)
 		elseif newValue == "VERTICAL_BLOCK" then
 			r[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", riaDb.x, riaDb.y)
 			r[2]:SetPoint("LEFT", r[1], "RIGHT", 3, 0)
@@ -418,7 +408,7 @@ function ria:orientation(newValue)
 			r[4]:SetPoint("BOTTOM", r[2], "BOTTOM", 0, -22)
 			r[5]:SetPoint("BOTTOM", r[3], "BOTTOM", 0, -22)
 			r[6]:SetPoint("BOTTOM", r[4], "BOTTOM", 0, -22)
-			r[7]:SetPoint("BOTTOM", r[5], "BOTTOM", 0, -22)
+			--r[7]:SetPoint("BOTTOM", r[5], "BOTTOM", 0, -22)
 		elseif newValue == "UP_CURVE" then
 			r[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", riaDb.x, riaDb.y)
 			r[2]:SetPoint("LEFT", r[1], "RIGHT", 6, 26)
@@ -426,7 +416,7 @@ function ria:orientation(newValue)
 			r[4]:SetPoint("LEFT", r[3], "RIGHT", 12, 0)
 			r[5]:SetPoint("LEFT", r[1], "RIGHT", 102, 26)
 			r[6]:SetPoint("LEFT", r[1], "RIGHT", 125, 0)
-			r[7]:SetPoint("TOP", r[3], "TOP", 15, -25)
+			--r[7]:SetPoint("TOP", r[3], "TOP", 15, -25)
 		elseif newValue == "HORIZONTAL_BLOCK" then
 			r[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", riaDb.x, riaDb.y)
 			r[2]:SetPoint("BOTTOM", r[1], "BOTTOM", 0, -22)
@@ -434,7 +424,7 @@ function ria:orientation(newValue)
 			r[4]:SetPoint("LEFT", r[2], "RIGHT", 3, 0)
 			r[5]:SetPoint("LEFT", r[3], "RIGHT", 3, 0)
 			r[6]:SetPoint("LEFT", r[4], "RIGHT", 3, 0)
-			r[7]:SetPoint("LEFT", r[5], "RIGHT", 3, 0)
+			--r[7]:SetPoint("LEFT", r[5], "RIGHT", 3, 0)
 		elseif newValue == "DOWN_CURVE" then
 			r[1]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", riaDb.x, riaDb.y)
 			r[2]:SetPoint("LEFT", r[1], "RIGHT", 6, -26)
@@ -442,106 +432,44 @@ function ria:orientation(newValue)
 			r[4]:SetPoint("LEFT", r[3], "RIGHT", 12, 0)
 			r[5]:SetPoint("LEFT", r[1], "RIGHT", 102, -26)
 			r[6]:SetPoint("LEFT", r[1], "RIGHT", 125, 0)
-			r[7]:SetPoint("BOTTOM", r[3], "BOTTOM", 15, 25)
+			--r[7]:SetPoint("BOTTOM", r[3], "BOTTOM", 15, 25)
 		end
 	else
-		for i = 1, CURRENT_MAX_RUNES do
+		for i = 1, MAX_NUM_RUNES do
 			r[i]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", riaDb.ind_x[i], riaDb.ind_y[i])
 		end
 	end
 end
 
-local runica = false
 function ria:images(newValue)
-    if newValue == "BETA" then
-        for i = 1, MAX_RUNE_CAPACITY do
-            b[i]:Hide()
-            if runica == true then
-                o[i]:SetTexture(nil)
-                t[i]:SetTexCoord(0,1,0,1)
-                r[i]:SetHeight(18)
-                r[i]:SetWidth(18)
-            end
-        end
-    elseif newValue == "BLIZZARD" then
-        for i = 1, MAX_RUNE_CAPACITY do
-            b[i]:Hide()
-            -- cooldown[i]:Show()
-            if runica == true then
-                t[i]:SetTexCoord(0,1,0,1)
-                r[i]:SetHeight(18)
-                r[i]:SetWidth(18)
-                -- cooldown[i]:SetWidth(18)
-                -- cooldown[i]:SetHeight(18)
-                o[i]:SetTexture(nil)
-            end
-        end
-		elseif newValue == "NEW_BLIZZARD" then
-			for i = 1, MAX_RUNE_CAPACITY do
+		if newValue ~= "RUNICA" and o[1] then
+			for i = 1, MAX_NUM_RUNES do
+				o[i]:SetTexture(nil)
+				t[i]:SetTexCoord(0,1,0,1)
+				r[i]:SetHeight(18)
+				r[i]:SetWidth(18)
+			end
+		end
+
+		if newValue ~= "NEW_BLIZZARD" then
+			for i = 1, MAX_NUM_RUNES do
+					b[i]:Hide()
+			end
+		end
+
+		if newValue == "NEW_BLIZZARD" then
+			for i = 1, MAX_NUM_RUNES do
 					b[i]:Show()
-					b[i]:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-SingleRune.blp")
-					if runica == true then
-							t[i]:SetTexCoord(0,1,0,1)
-							r[i]:SetHeight(18)
-							r[i]:SetWidth(18)
-							o[i]:SetTexture(nil)
+					if riaDb.runeType == "SPEC" then
+						b[i]:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[GetSpecialization()].."-Rune-Ready")
+					elseif riaDb.runeType ~= "Death" then
+						b[i]:SetAtlas("DK-"..riaDb.runeType.."-Rune-Ready")
+					else
+						b[i]:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-SingleRune.blp")
 					end
 			end
-			RuneItAllControlPanelruneTypeButton:SetText("Death")
-			riaDb.runeType = "DEATH"
-    elseif newValue == "DKI" then
-        for i = 1, MAX_RUNE_CAPACITY do
-            b[i]:Hide()
-            if runica == true then
-                o[i]:SetTexture(nil)
-                t[i]:SetTexCoord(0,1,0,1)
-                r[i]:SetHeight(18)
-                r[i]:SetWidth(18)
-            end
-        end
-    elseif newValue == "LETTER" then
-        for i = 1, MAX_RUNE_CAPACITY do
-            b[i]:Hide()
-            if runica == true then
-                o[i]:SetTexture(nil)
-                t[i]:SetTexCoord(0,1,0,1)
-                r[i]:SetHeight(18)
-                r[i]:SetWidth(18)
-            end
-        end
-    elseif newValue == "ORB" then
-        for i = 1, MAX_RUNE_CAPACITY do
-            b[i]:Hide()
-            if runica == true then
-                o[i]:SetTexture(nil)
-                t[i]:SetTexCoord(0,1,0,1)
-                r[i]:SetHeight(18)
-                r[i]:SetWidth(18)
-            end
-        end
-    elseif newValue == "ENHANCED" then
-        for i = 1, MAX_RUNE_CAPACITY do
-            b[i]:Hide()
-            if runica == true then
-                o[i]:SetTexture(nil)
-                t[i]:SetTexCoord(0,1,0,1)
-                r[i]:SetHeight(18)
-                r[i]:SetWidth(18)
-            end
-        end
-    elseif newValue == "JAPENESE" then
-        for i = 1, MAX_RUNE_CAPACITY do
-            b[i]:Hide()
-            if runica == true then
-                o[i]:SetTexture(nil)
-                t[i]:SetTexCoord(0,1,0,1)
-                r[i]:SetHeight(18)
-                r[i]:SetWidth(18)
-            end
-        end
     elseif newValue == "RUNICA" then
-        runica = true
-        for i = 1, MAX_RUNE_CAPACITY do
+        for i = 1, MAX_NUM_RUNES do
             t[i]:SetTexCoord(0.1,0.9,0.1,0.9)
             b[i]:Hide()
             r[i]:SetHeight(21)
@@ -555,8 +483,13 @@ function ria:images(newValue)
         end
 				self:orientation(riaDb.layoutChoice)
     end
-		for i=1,MAX_RUNE_CAPACITY do
-			t[i]:SetTexture(iconTextures[riaDb.runeType][newValue])
+
+		for i=1,MAX_NUM_RUNES do
+			if riaDb.runeType == "SPEC" then
+				t[i]:SetTexture(iconTextures[RUNE_KEY_BY_SPEC[GetSpecialization()]][newValue])
+			else
+				t[i]:SetTexture(iconTextures[riaDb.runeType][newValue])
+			end
 		end
 end
 

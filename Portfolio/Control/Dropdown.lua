@@ -279,7 +279,7 @@ end
 function Portfolio.Control.DropDown.OnClick(self)
 	local control = self:GetParent()
 	ToggleDropDownMenu(1, nil, control, control:GetName(), 0, 0, control.rootMenuList)
-	PlaySound("igMainMenuOptionCheckBoxOn")
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
 end
 
 -- Event: OnEnter

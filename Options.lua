@@ -124,7 +124,7 @@ local optionTable = {
       defaultValue = "NEW_BLIZZARD";
       menuList = {
           {
-            text = "Default Blizzard";
+            text = "Original Blizzard";
             value = "BLIZZARD";
           };
           {
@@ -156,7 +156,7 @@ local optionTable = {
               value = "RUNICA";
           };
           {
-              text = "New Blizzard Death Runes";
+              text = "Default Legion Runes";
               value = "NEW_BLIZZARD";
           };
         };
@@ -329,20 +329,24 @@ local optionTable = {
       menuList = {
         {
           text = "Death";
-          value = "DEATH";
+          value = "Death";
         };
         {
           text = "Blood";
-          value = "BLOOD";
+          value = "Blood";
         };
         {
           text = "Frost";
-          value = "FROST";
+          value = "Frost";
         };
         {
           text = "Unholy";
-          value = "UNHOLY";
+          value = "Unholy";
         };
+        {
+          text = "My Current Spec";
+          value = "SPEC";
+        }
       };
       point = {"LEFT", "cdTextAlpha", "RIGHT", 25, 0};
       callback = function(value, isGUI, isUpdate) ria:images(riaDb.textureChoice) end;

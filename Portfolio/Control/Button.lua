@@ -18,44 +18,44 @@ function Portfolio.Control.Button.Register(optionsFrame, option)
 	--Portfolio.Print(controlName)
 	--Copy Vars
 	Portfolio.CopyTableElements(control, option, "tooltipText", "callback")
-	
+
 	Portfolio.InitField(control, option, "xOffset")
 	Portfolio.InitField(control, option, "xOffsetRelative")
 	Portfolio.InitField(control, option, "yOffset")
 	Portfolio.InitField(control, option, "yOffsetRelative")
-	
+
 	Portfolio.PopulateCommonControl(optionsFrame, option, CONTROLTYPE_BUTTON, control)
-	
+
 	-- Frame Population
 	control.UpdateText = Portfolio.Control.UpdateText
 	control.SetText = Portfolio.Control.SetText
 	--TODO: Maybe allow the user to set a variable to update text on callback?
 	-- temp fix for GetValueText called by UpdateText
 	control.GetValue = function(self) return UNKNOWN end
-	
-	
+
+
 	--Wrap Callback
 	control:SetScript("OnClick", Portfolio.Control.Button.OnClick)
-	
+
 	-- Setup Frame Text
 	control:UpdateText()
-	
+
 	-- Default width (override?)
 	control:SetWidth(100)
-	
+
 	-- Update OnEnter to accept tooltipText as functions
 	control:SetScript("OnEnter", Portfolio.Control.OnEnter)
-	
+
 	-- Button also needs OnLeave set
 	control:SetScript("OnLeave", Portfolio.Control.OnLeave)
-	
+
 	--control.currValue = "1"
 	--control.value = "1"
-	
+
 	if (type(option.init) == "function") then
 		option.init(control)
 	end
-	
+
 	return control
 end
 
@@ -66,7 +66,7 @@ end
 
 -- Event: OnClick
 function Portfolio.Control.Button.OnClick(self)
-	PlaySound("gsTitleOptionOK")
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
 	-- Safe callback with pcall
 	if (self.callback) then
 		local success, result = pcall( self.callback )
@@ -79,5 +79,3 @@ function Portfolio.Control.Button.OnClick(self)
 	-- Update Text
 	self:UpdateText()
 end
-
-

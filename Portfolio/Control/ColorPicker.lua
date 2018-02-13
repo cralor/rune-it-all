@@ -18,58 +18,58 @@ function Portfolio.Control.ColorPicker.Register(optionsFrame, option)
 	local control = CreateFrame("Button", controlName, optionsFrame.scrollChild) -- No Template
 	control:SetWidth(16)
 	control:SetHeight(16)
-	
+
 	local bg = control:CreateTexture(nil, "BACKGROUND") -- bg texture
 	bg:SetWidth(14)
 	bg:SetHeight(14)
 	bg:SetPoint("CENTER", 0, 0)
 	bg:SetTexture(1,1,1) -- white bg
 	control.GetBackground = function(self) return bg end
-	
+
 	control:SetNormalTexture("Interface\\ChatFrame\\ChatFrameColorSwatch") -- main color texture
-	
+
 	-- Add Text
 	local desc = control:CreateFontString(controlName.."Text", "ARTWORK", "GameFontNormalSmall")
 	desc:SetPoint("LEFT", control, "RIGHT", 6, 0)
-	
+
 	--Copy Vars
 	Portfolio.CopyTableElements(control, option, "tooltipText", "callback", "hasOpacity", "cancelFunc")
-	
+
 	Portfolio.InitField(control, option, "xOffset", 4)
 	Portfolio.InitField(control, option, "yOffset")
 	Portfolio.InitField(control, option, "xOffsetRelative", -4)
 	Portfolio.InitField(control, option, "yOffsetRelative")
-	
-	
+
+
 	Portfolio.PopulateCommonControl(optionsFrame, option, CONTROLTYPE_COLORPICKER, control)
 	Portfolio.PopulateValueControl(optionsFrame, option, control)
-	
+
 	-- Frame Population
 	control.GetValue = Portfolio.Control.GetValue
 	control.SetValue = Portfolio.Control.ColorPicker.SetValue
 	control.Update = Portfolio.Control.Update
 	control.UpdateText = Portfolio.Control.ColorPicker.UpdateText
 	control.SetText = Portfolio.Control.SetText
-	
+
 	control:SetScript("OnEnter", Portfolio.Control.ColorPicker.OnEnter)
 	control:SetScript("OnLeave", Portfolio.Control.ColorPicker.OnLeave)
 	control:SetScript("OnClick", Portfolio.Control.ColorPicker.OnClick)
-	
+
 	-- Enable (same as Checkbox)
 	BlizzardOptionsPanel_CheckButton_Enable(control)
-	
+
 	-- Setup Frame Text
 	control:UpdateText()
-	
+
 	--control.currValue = "1"
 	--control.value = "1"
-	
+
 	Portfolio.InitDefaultValue(control)
-	
+
 	if type(option.init) == "function" then
 		option.init(control)
 	end
-	
+
 	return control
 end
 
@@ -84,12 +84,12 @@ end
 	@param self		control
 	@param color	new color table {r=#, g=#, b=#, opacity=#} (opacity is optional)
 	@param isGUI	(boolean) called from a GUI interaction, passed to the callback
-	@param isUpdate	(boolean) called from control:Update(), passed to the callback 
+	@param isUpdate	(boolean) called from control:Update(), passed to the callback
 	@usage			control:SetValue(color)
 --]]--
 function Portfolio.Control.ColorPicker.SetValue(self, color, isGUI, isUpdate)
 	Portfolio.Control.SetValue(self, color, isGUI, isUpdate)
-	
+
 	local normalTex = self:GetNormalTexture()
 	normalTex:SetVertexColor(color.r, color.g, color.b)
 	if (color.opacity) then
@@ -134,8 +134,8 @@ end
 
 -- Event: OnClick
 function Portfolio.Control.ColorPicker.OnClick(self)
-	PlaySound("gsTitleOptionOK")
-	
+	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
+
 	local control = self
 	local func = function()
 		local r, g, b = ColorPickerFrame:GetColorRGB()
@@ -143,10 +143,10 @@ function Portfolio.Control.ColorPicker.OnClick(self)
 		if ( ColorPickerFrame.hasOpacity ) then
 			opacity = 1 - Portfolio.Round(OpacitySliderFrame:GetValue(), 2) -- round to 2 decimal points
 		end
-		
+
 		-- TODO: don't recreate the table?
 		local color = {r = r, g = g, b = b, opacity = opacity}
-		
+
 		--if not control:ValueEquals(color) then
 			if ColorPickerFrame:IsShown() then
 				-- call callback
@@ -157,7 +157,7 @@ function Portfolio.Control.ColorPicker.OnClick(self)
 			end
 		--end
 	end
-	
+
 	local color = self:GetValue()
 	ColorPickerFrame.hasOpacity = self.hasOpacity
 	if ( self.hasOpacity and color.opacity ) then
@@ -169,18 +169,17 @@ function Portfolio.Control.ColorPicker.OnClick(self)
 		ColorPickerFrame.func = func
 		ColorPickerFrame.opacityFunc = nil
 	end
-	
+
 	-- This triggers a call to ColorPickerFrame.func()
 	ColorPickerFrame:SetColorRGB(color.r, color.g, color.b)
 	ColorPickerFrame.previousValues = {r = color.r, g = color.g, b = color.b, opacity = color.opacity}
-	
+
 	ColorPickerFrame.cancelFunc = function(previousValues)
 		Portfolio.Control.SetValue(control, previousValues, true)
 		if control.cancelFunc then
 			control.cancelFunc(previousValues)
 		end
 	end
-	
+
 	ShowUIPanel(ColorPickerFrame)
 end
-
