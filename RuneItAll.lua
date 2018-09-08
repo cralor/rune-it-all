@@ -157,11 +157,10 @@ function ria:init()
 	end)
 end
 
-function events:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local type = select(2, ...)
+function events:COMBAT_LOG_EVENT_UNFILTERED()
+	local _, type, _, _, unitName = CombatLogGetCurrentEventInfo()
 	if (type == "UNIT_DIED") then
-			local unit = select(4, ...)
-			if (unit == UnitName("player")) then
+			if (unitName == UnitName("player")) then
 					self:images(riaDb.textureChoice)
 			end
 	end
@@ -193,8 +192,10 @@ function events:UNIT_ENTERED_VEHICLE()
 end
 
 function events:RUNE_POWER_UPDATE(...)
-	local runeIndex, _ = ...
-	self:RunePowerUpdate(runeIndex)
+	local runeIndex, usable = ...
+	for i=1, MAX_NUM_RUNES do
+		self:RunePowerUpdate(i)
+	end
 end
 
 function events:PLAYER_ENTERING_WORLD()
@@ -315,7 +316,7 @@ function ria:RunePowerUpdate(runeIndex)
 				b[runeIndex]:SetAlpha(1)
 			end
 			t[runeIndex]:SetVertexColor(1,1,1,1)
-			if InCombatLockdown() == nil then
+			if not InCombatLockdown() then
 				self:alpha(riaDb.alphaOutOfCombat)
 			end
 		end

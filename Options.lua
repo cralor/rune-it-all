@@ -161,7 +161,7 @@ local optionTable = {
           };
         };
         point = {"LEFT", "layoutChoice", "RIGHT", 15, 0};
-        callback = function(value, isGUI, isUpdate) ria:images(value) end;
+        callback = function(value, isGUI, isUpdate) if not isUpdate then ria:images(value) end end;
     };
     {
         id = "entv";
@@ -349,7 +349,7 @@ local optionTable = {
         }
       };
       point = {"LEFT", "cdTextAlpha", "RIGHT", 25, 0};
-      callback = function(value, isGUI, isUpdate) ria:images(riaDb.textureChoice) end;
+      callback = function(value, isGUI, isUpdate) if not isUpdate then ria:images(riaDb.textureChoice) end end;
     };
   };
   savedVarTable = "riaDb";

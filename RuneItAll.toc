@@ -1,7 +1,7 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Rune-It-All
 ## Author: cralor
-## Version: 7.3.0
+## Version: 8.0.1
 ## Notes: Simple and rich Death Knight rune customizations
 ## SavedVariablesPerCharacter: riaDb
 
@@ -12,7 +12,7 @@
 ## X-Website: http://www.wowinterface.com/downloads/info10157-Rune-It-All.html
 ## X-Localizations: enUS
 ## X-CompatibleLocales: enUS, enGB
-## X-Curse-Packaged-Version: 7.3.0
+## X-Curse-Packaged-Version: 8.0.1
 ## X-Curse-Project-Name: Rune-It-All
 ## X-Curse-Project-ID: runeitall
 ## X-Curse-Repository-ID: wow/runeitall/mainline
