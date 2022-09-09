@@ -9,21 +9,26 @@ local MAX_NUM_RUNES = 6
 local IMAGES_PATH = "Interface\\AddOns\\RuneItAll\\images\\"
 local r, o, t, b, cdText = {}, {}, {}, {}, {}
 
+local RUNETYPE_BLOOD = 1
+local RUNETYPE_UNHOLY = 3
+local RUNETYPE_FROST = 2
+local RUNETYPE_DEATH = 4
+
 local runeColors = {
-	["Blood"]  = {1,   0,   0},
-	["Unholy"] = {0,   0.5, 0},
-	["Frost"]  = {0,   1,   1},
-	["Death"]  = {0.8, 0.1, 1}
+	[RUNETYPE_BLOOD]  = {1,   0,   0},
+	[RUNETYPE_UNHOLY] = {0,   0.5, 0},
+	[RUNETYPE_FROST]  = {0,   1,   1},
+	[RUNETYPE_DEATH]  = {0.8, 0.1, 1}
 }
 
-local RUNE_KEY_BY_SPEC = {
-	[1] = "Blood",
-	[2] = "Frost",
-	[3] = "Unholy"
-}
+-- local RUNE_KEY_BY_SPEC = {
+-- 	[1] = "Blood",
+-- 	[2] = "Frost",
+-- 	[3] = "Unholy"
+-- }
 
 local iconTextures = {
-	["Blood"] = {
+	[RUNETYPE_BLOOD] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Blood.blp",
 		["BETA"] = IMAGES_PATH.."beta\\blood.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\blood.tga",
@@ -34,7 +39,7 @@ local iconTextures = {
 		["RUNICA"] = IMAGES_PATH.."runica\\blood.tga",
 		["NEW_BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Ring.blp"
 	},
-	["Death"] = {
+	[RUNETYPE_DEATH] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Death.blp",
 		["BETA"] = IMAGES_PATH.."beta\\death.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\death.tga",
@@ -45,7 +50,7 @@ local iconTextures = {
 		["RUNICA"] = IMAGES_PATH.."runica\\death.tga",
 		["NEW_BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Ring.blp"
 	},
-	["Unholy"] = {
+	[RUNETYPE_UNHOLY] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Unholy.blp",
 		["BETA"] = IMAGES_PATH.."beta\\unholy.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\unholy.tga",
@@ -56,7 +61,7 @@ local iconTextures = {
 		["RUNICA"] = IMAGES_PATH.."runica\\unholy.tga",
 		["NEW_BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Ring.blp"
 	},
-	["Frost"] = {
+	[RUNETYPE_FROST] = {
 		["BLIZZARD"] = "Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-Frost.blp",
 		["BETA"] = IMAGES_PATH.."beta\\frost.blp",
 		["DKI"] = IMAGES_PATH.."DKI\\frost.tga",
@@ -129,6 +134,15 @@ function ria:init()
 	RuneFrame:SetAlpha(0)
 	RuneFrame:Hide()
 
+	local temp
+	temp = r[3];
+	r[3] = r[5];
+	r[5] = temp;
+	
+	temp = r[4];
+	r[4] = r[6];
+	r[6] = temp;
+
 	for i = 1,MAX_NUM_RUNES do
 		r[i]:SetClampedToScreen(true)
 		r[i]:SetFrameStrata("LOW")
@@ -151,7 +165,7 @@ function ria:init()
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("PET_BATTLE_OPENING_START")
 	self:RegisterEvent("PET_BATTLE_CLOSE")
-	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
+	-- self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	self:SetScript("OnEvent", function(self, event, ...)
 		events[event](self, ...)
 	end)
@@ -205,9 +219,9 @@ function events:PLAYER_ENTERING_WORLD()
 	self:refresh()
 end
 
-function events:PLAYER_SPECIALIZATION_CHANGED()
-	self:images(riaDb.textureChoice)
-end
+-- function events:PLAYER_SPECIALIZATION_CHANGED()
+-- 	self:images(riaDb.textureChoice)
+-- end
 
 function events:PLAYER_REGEN_DISABLED()
 	if not UnitInVehicle("player") then
@@ -234,6 +248,19 @@ function ria:refresh(alphaVal)
 	self:setH(riaDb.hPadding)
 end
 
+function ria:buffoonery(runeIndex)
+	if runeIndex == 3 then
+		runeIndex = 5
+	elseif runeIndex == 5 then
+		runeIndex = 3
+	elseif runeIndex == 4 then
+		runeIndex = 6
+	elseif runeIndex == 6 then
+		runeIndex = 4
+	end
+	return runeIndex
+end
+
 function ria:updateCdText(runeIndex, start, duration, runeReady)
 	local apply, time = ria:getCurrentCd(runeIndex, start, duration, runeReady)
 	if apply then
@@ -253,11 +280,11 @@ function ria:setCdText(runeIndex, time)
 	if (time == 0) then
 		time = ""
 	elseif (riaDb.cdTextColor == "RUNE_COLORS") then
-		if riaDb.runeType == "SPEC" then
-			color = runeColors[RUNE_KEY_BY_SPEC[GetSpecialization()]]
-		else
-			color = runeColors[riaDb.runeType]
-		end
+		-- if riaDb.runeType == "SPEC" then
+		-- 	color = runeColors[RUNE_KEY_BY_SPEC[GetSpecialization()]]
+		-- else
+		color = runeColors[GetRuneType(runeIndex)]
+		-- end
 	elseif (riaDb.cdTextColor == "CUSTOM_COLOR") then
 		color = {
 			riaDb.cdCustomColorPicker.r,
@@ -269,6 +296,7 @@ function ria:setCdText(runeIndex, time)
 		local _, g, _ = cdText[runeIndex]:GetTextColor()
 		if (g > 0.5) then color = {1, 0, 0} end
 	end
+	runeIndex = ria:buffoonery(runeIndex)
 	cdText[runeIndex]:Show()
 	cdText[runeIndex]:SetTextColor(unpack(color))
 	cdText[runeIndex]:SetText(time)
@@ -461,13 +489,13 @@ function ria:images(newValue)
 		if newValue == "NEW_BLIZZARD" then
 			for i = 1, MAX_NUM_RUNES do
 					b[i]:Show()
-					if riaDb.runeType == "SPEC" then
-						b[i]:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[GetSpecialization()].."-Rune-Ready")
-					elseif riaDb.runeType ~= "Death" then
-						b[i]:SetAtlas("DK-"..riaDb.runeType.."-Rune-Ready")
-					else
+					-- if riaDb.runeType == "SPEC" then
+					-- 	b[i]:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[GetSpecialization()].."-Rune-Ready")
+					-- if riaDb.runeType ~= "Death" then
+					-- 	b[i]:SetAtlas("DK-"..riaDb.runeType.."-Rune-Ready")
+					-- else
 						b[i]:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-SingleRune.blp")
-					end
+					-- end
 			end
     elseif newValue == "RUNICA" then
         for i = 1, MAX_NUM_RUNES do
@@ -486,11 +514,11 @@ function ria:images(newValue)
     end
 
 		for i=1,MAX_NUM_RUNES do
-			if riaDb.runeType == "SPEC" then
-				t[i]:SetTexture(iconTextures[RUNE_KEY_BY_SPEC[GetSpecialization()]][newValue])
-			else
-				t[i]:SetTexture(iconTextures[riaDb.runeType][newValue])
-			end
+			-- if riaDb.runeType == "SPEC" then
+			-- 	t[i]:SetTexture(iconTextures[RUNE_KEY_BY_SPEC[GetSpecialization()]][newValue])
+			-- else
+			t[i]:SetTexture(iconTextures[GetRuneType(i)][newValue])
+			-- end
 		end
 end
 
@@ -505,6 +533,7 @@ SLASH_RUNEITALL3 = "/rune-it-all"
 function RuneItAll_SlashHandler(msg)
     local frame = LibStub("Portfolio").GetOptionsFrame("RuneItAll")
     InterfaceOptionsFrame_OpenToCategory(frame)
+	InterfaceOptionsFrame_OpenToCategory(frame)
 end
 
 ria:init()

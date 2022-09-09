@@ -155,10 +155,10 @@ local optionTable = {
               text = "Runica Runes";
               value = "RUNICA";
           };
-          {
-              text = "Default Legion Runes";
-              value = "NEW_BLIZZARD";
-          };
+          -- {
+          --     text = "Default Legion Runes";
+          --     value = "NEW_BLIZZARD";
+          -- };
         };
         point = {"LEFT", "layoutChoice", "RIGHT", 15, 0};
         callback = function(value, isGUI, isUpdate) if not isUpdate then ria:images(value) end end;
@@ -321,36 +321,36 @@ local optionTable = {
       point = {"LEFT", "cdEnabled", "RIGHT", 150, 0};
       callback = function(value, isGUI, isUpdate) ria:setCdFontSize(value) end;
     };
-    {
-      id = "runeType";
-      headerText = "Rune Art Type";
-      type = CONTROLTYPE_DROPDOWN;
-      defaultValue = "DEATH";
-      menuList = {
-        {
-          text = "Death";
-          value = "Death";
-        };
-        {
-          text = "Blood";
-          value = "Blood";
-        };
-        {
-          text = "Frost";
-          value = "Frost";
-        };
-        {
-          text = "Unholy";
-          value = "Unholy";
-        };
-        {
-          text = "My Current Spec";
-          value = "SPEC";
-        }
-      };
-      point = {"LEFT", "cdTextAlpha", "RIGHT", 25, 0};
-      callback = function(value, isGUI, isUpdate) if not isUpdate then ria:images(riaDb.textureChoice) end end;
-    };
+    -- {
+    --   id = "runeType";
+    --   headerText = "Rune Art Type";
+    --   type = CONTROLTYPE_DROPDOWN;
+    --   defaultValue = "DEATH";
+    --   menuList = {
+    --     {
+    --       text = "Death";
+    --       value = "Death";
+    --     };
+    --     {
+    --       text = "Blood";
+    --       value = "Blood";
+    --     };
+    --     {
+    --       text = "Frost";
+    --       value = "Frost";
+    --     };
+    --     {
+    --       text = "Unholy";
+    --       value = "Unholy";
+    --     };
+    --     {
+    --       text = "My Current Spec";
+    --       value = "SPEC";
+    --     }
+    --   };
+    --   point = {"LEFT", "cdTextAlpha", "RIGHT", 25, 0};
+    --   callback = function(value, isGUI, isUpdate) if not isUpdate then ria:images(riaDb.textureChoice) end end;
+    -- };
   };
   savedVarTable = "riaDb";
 }

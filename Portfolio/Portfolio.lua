@@ -299,7 +299,7 @@ function Portfolio.InsetScrollBar(scrollFrame)
 		edgeSize = 12,
 		insets = { left = 0, right = 0, top = 5, bottom = 5 }
 	}
-	local border = CreateFrame("Frame", nil, scrollbar)
+	local border = CreateFrame("Frame", nil, scrollbar, "BackdropTemplate")
 	border:SetPoint("TOPLEFT", _G[frameName.."ScrollBarScrollUpButton"], -5, 5)
 	border:SetPoint("BOTTOMRIGHT", _G[frameName.."ScrollBarScrollDownButton"], 5, -4)
 	border:SetBackdrop(scrollBackdrop)
