@@ -327,6 +327,12 @@ function ria:RunePowerUpdate(runeIndex)
 			if riaDb.cdEnabled == "1" then
 				r[runeIndex]:SetScript("OnUpdate", function()
 					ria:updateCdText(runeIndex, start, duration, runeReady) end)
+				if not InCombatLockdown() and riaDb.alphaOutOfCombat == 0 then
+					for i=1,MAX_NUM_RUNES do
+						r[i]:SetScript("OnUpdate", nil)
+						cdText[i]:Hide()
+					end
+				end
 			end
 			if riaDb.textureChoice == "BLIZZARD" or riaDb.textureChoice == "NEW_BLIZZARD" then
 				b[runeIndex]:SetAlpha(0.3)
@@ -347,6 +353,10 @@ function ria:RunePowerUpdate(runeIndex)
 			if not InCombatLockdown() then
 				self:alpha(riaDb.alphaOutOfCombat)
 			end
+		end
+
+		for i=1,MAX_NUM_RUNES do
+			t[i]:SetTexture(iconTextures[GetRuneType(i)][riaDb.textureChoice])
 		end
 	end
 end
@@ -471,32 +481,32 @@ function ria:orientation(newValue)
 end
 
 function ria:images(newValue)
-		if newValue ~= "RUNICA" and o[1] then
-			for i = 1, MAX_NUM_RUNES do
-				o[i]:SetTexture(nil)
-				t[i]:SetTexCoord(0,1,0,1)
-				r[i]:SetHeight(18)
-				r[i]:SetWidth(18)
-			end
+	if newValue ~= "RUNICA" and o[1] then
+		for i = 1, MAX_NUM_RUNES do
+			o[i]:SetTexture(nil)
+			t[i]:SetTexCoord(0,1,0,1)
+			r[i]:SetHeight(18)
+			r[i]:SetWidth(18)
 		end
+	end
 
-		if newValue ~= "NEW_BLIZZARD" then
-			for i = 1, MAX_NUM_RUNES do
-					b[i]:Hide()
-			end
+	if newValue ~= "NEW_BLIZZARD" then
+		for i = 1, MAX_NUM_RUNES do
+				b[i]:Hide()
 		end
+	end
 
-		if newValue == "NEW_BLIZZARD" then
-			for i = 1, MAX_NUM_RUNES do
-					b[i]:Show()
-					-- if riaDb.runeType == "SPEC" then
-					-- 	b[i]:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[GetSpecialization()].."-Rune-Ready")
-					-- if riaDb.runeType ~= "Death" then
-					-- 	b[i]:SetAtlas("DK-"..riaDb.runeType.."-Rune-Ready")
-					-- else
-						b[i]:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-SingleRune.blp")
-					-- end
-			end
+	if newValue == "NEW_BLIZZARD" then
+		for i = 1, MAX_NUM_RUNES do
+				b[i]:Show()
+				-- if riaDb.runeType == "SPEC" then
+				-- 	b[i]:SetAtlas("DK-"..RUNE_KEY_BY_SPEC[GetSpecialization()].."-Rune-Ready")
+				-- if riaDb.runeType ~= "Death" then
+				-- 	b[i]:SetAtlas("DK-"..riaDb.runeType.."-Rune-Ready")
+				-- else
+				b[i]:SetTexture("Interface\\PlayerFrame\\UI-PlayerFrame-Deathknight-SingleRune.blp")
+				-- end
+		end
     elseif newValue == "RUNICA" then
         for i = 1, MAX_NUM_RUNES do
             t[i]:SetTexCoord(0.1,0.9,0.1,0.9)
@@ -513,13 +523,13 @@ function ria:images(newValue)
 				self:orientation(riaDb.layoutChoice)
     end
 
-		for i=1,MAX_NUM_RUNES do
-			-- if riaDb.runeType == "SPEC" then
-			-- 	t[i]:SetTexture(iconTextures[RUNE_KEY_BY_SPEC[GetSpecialization()]][newValue])
-			-- else
-			t[i]:SetTexture(iconTextures[GetRuneType(i)][newValue])
-			-- end
-		end
+	for i=1,MAX_NUM_RUNES do
+		-- if riaDb.runeType == "SPEC" then
+		-- 	t[i]:SetTexture(iconTextures[RUNE_KEY_BY_SPEC[GetSpecialization()]][newValue])
+		-- else
+		t[i]:SetTexture(iconTextures[GetRuneType(i)][newValue])
+		-- end
+	end
 end
 
 SlashCmdList["RUNEITALL"] = function(msg)
