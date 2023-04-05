@@ -232,6 +232,12 @@ end
 function events:PLAYER_REGEN_ENABLED()
 	if not UnitInVehicle("player") then
 		self:alpha(riaDb.alphaOutOfCombat)
+		if riaDb.alphaOutOfCombat == 0 then
+			for i=1,MAX_NUM_RUNES do
+				r[i]:SetScript("OnUpdate", nil)
+				cdText[i]:Hide()
+			end
+		end
 	end
 end
 
